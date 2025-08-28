@@ -1,12 +1,10 @@
-from stats import Stats
+from .stats import Stats
+from .entity import Entity
 
 
-class Piece:
-    def __init__(
-        self,
-        name: str
-    ):
-        self.name = name
+class Piece(Entity):
+    def __init__(self, id: int, name: str):
+        super().__init__(id, name)
         self.stats = Stats()
 
 
