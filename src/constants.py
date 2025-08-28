@@ -1,5 +1,8 @@
 from enum import IntEnum
 
+BOARD_ROW_SIZE = 8
+BOARD_COL_SIZE = 8
+
 
 class MoveType(IntEnum):
     FORWARD = 1
