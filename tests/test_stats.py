@@ -12,7 +12,7 @@ class TestStats(unittest.TestCase):
     def test_add(self):
         stats = Stats()
 
-        stats.create_stat("stat1", 10)
+        stats.add("stat1", 10)
 
         self.assertDictEqual(
             stats.to_dict(),
@@ -30,9 +30,9 @@ class TestStats(unittest.TestCase):
     def test_add_multiple(self):
         stats = Stats()
 
-        stat1 = stats.create_stat("stat1", 10)
-        stat2 = stats.create_stat("stat2", 10)
-        stat3 = stats.create_stat("stat3", 10)
+        stat1 = stats.add("stat1", 10)
+        stat2 = stats.add("stat2", 10)
+        stat3 = stats.add("stat3", 10)
 
         self.assertDictEqual(
             stats.to_dict(),
@@ -67,7 +67,7 @@ class TestStats(unittest.TestCase):
     def test_add_modifier(self):
         stats = Stats()
 
-        stats.create_stat("stat1", 10)
+        stats.add("stat1", 10)
 
         modifier = Modifier("mod1", 10, ModifierType.FLAT)
         stats["stat1"].add_modifier(modifier)

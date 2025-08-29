@@ -13,6 +13,11 @@ class Stats:
     def __init__(self):
         self._stats: Dict[str, Stat] = {}
 
+    def __eq__(self, other: 'Stats'):
+        return (
+            self._stats == other._stats
+        )
+
     def __getitem__(self, name: str) -> Stat:
         """Dict-like access (case-insensitive)."""
         stat = self._stats.get(name.lower())
@@ -33,9 +38,9 @@ class Stats:
     def __len__(self) -> int:
         return len(self._stats)
 
-    def create_stat(self, name: str, base_value: float, **kwargs) -> Stat:
+    def add(self, name: str, base_value: float, **kwargs) -> Stat:
         """
-        Create and add a new stat.
+        Create/Update a stat (will override the stat).
         Example: stats.add("health", 100, min_value=0, max_value=200)
         """
         stat = Stat(name, base_value, **kwargs)
