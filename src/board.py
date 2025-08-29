@@ -12,6 +12,19 @@ class Board:
             [None for _ in range(cols)] for _ in range(rows)
         ]
 
+    def __repr__(self):
+        lines = []
+        for row in range(len(self._board)):
+            entities = []
+            for col in range(len(self._board[0])):
+                entities.append(f"{self._board[row][col]}")
+            lines.append("[ " + ", ".join(entities) + " ]")
+        return "\n".join(lines)
+
+    @property
+    def size(self):
+        return (self._rows, self._cols)
+
     def add_entity(self, location: tuple[int, int], entity: Entity):
         row, col = location
         if self._board[row][col] is not None:
@@ -30,5 +43,6 @@ class Board:
         self._board[row_end][col_end] = self._board[row_start][col_start]
         self._board[row_start][col_start] = None
 
-    def get_entity(self, row: int, col: int) -> Optional[Entity]:
+    def get_entity(self, location: tuple[int, int]) -> Optional[Entity]:
+        row, col = location
         return self._board[row][col]

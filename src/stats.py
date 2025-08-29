@@ -33,7 +33,7 @@ class Stats:
     def __len__(self) -> int:
         return len(self._stats)
 
-    def add(self, name: str, base_value: float, **kwargs) -> Stat:
+    def create_stat(self, name: str, base_value: float, **kwargs) -> Stat:
         """
         Create and add a new stat.
         Example: stats.add("health", 100, min_value=0, max_value=200)

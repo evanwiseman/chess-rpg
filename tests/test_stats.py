@@ -1,7 +1,6 @@
 import unittest
 
 from src.modifier import Modifier, ModifierType
-from src.stat import Stat
 from src.stats import Stats
 
 
@@ -13,8 +12,7 @@ class TestStats(unittest.TestCase):
     def test_add(self):
         stats = Stats()
 
-        stat = Stat("stat1", 10)
-        stats.add(stat)
+        stats.create_stat("stat1", 10)
 
         self.assertDictEqual(
             stats.to_dict(),
@@ -32,14 +30,9 @@ class TestStats(unittest.TestCase):
     def test_add_multiple(self):
         stats = Stats()
 
-        stat1 = Stat("stat1", 10)
-        stats.add(stat1)
-
-        stat2 = Stat("stat2", 10)
-        stats.add(stat2)
-
-        stat3 = Stat("stat3", 10)
-        stats.add(stat3)
+        stat1 = stats.create_stat("stat1", 10)
+        stat2 = stats.create_stat("stat2", 10)
+        stat3 = stats.create_stat("stat3", 10)
 
         self.assertDictEqual(
             stats.to_dict(),
@@ -67,12 +60,14 @@ class TestStats(unittest.TestCase):
                 }
             }
         )
+        self.assertEqual(stat1, stats["stat1"])
+        self.assertEqual(stat2, stats["stat2"])
+        self.assertEqual(stat3, stats["stat3"])
 
     def test_add_modifier(self):
         stats = Stats()
 
-        stat = Stat("stat1", 10)
-        stats.add(stat)
+        stats.create_stat("stat1", 10)
 
         modifier = Modifier("mod1", 10, ModifierType.FLAT)
         stats["stat1"].add_modifier(modifier)
