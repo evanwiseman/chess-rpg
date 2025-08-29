@@ -1,7 +1,6 @@
 import unittest
 
-from src.modifier import Modifier, ModifierType
-from src.stats import Stats
+from src.stats import Modifier, ModifierType, Stats
 
 
 class TestStats(unittest.TestCase):

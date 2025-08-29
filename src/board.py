@@ -1,7 +1,7 @@
 from typing import List, Optional
 
 from .constants import BOARD_ROW_SIZE, BOARD_COL_SIZE
-from .entity import Entity
+from src.entities import Entity
 
 
 class Board:

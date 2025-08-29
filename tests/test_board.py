@@ -2,7 +2,7 @@ import unittest
 
 from src.board import Board
 from src.constants import BOARD_ROW_SIZE, BOARD_COL_SIZE
-from src.pieces import Pawn
+from src.entities.pieces import Pawn
 
 
 class TestBoard(unittest.TestCase):

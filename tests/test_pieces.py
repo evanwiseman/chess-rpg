@@ -1,6 +1,6 @@
 import unittest
 
-from src.pieces import Piece, Pawn, Bishop, Knight, Rook, Queen, King
+from src.entities.pieces import Piece, Pawn, Bishop, Knight, Rook, Queen, King
 from src.constants import (
     PAWN_DAMAGE, PAWN_HEALTH, PAWN_NAME, PAWN_RANGE, PAWN_VALUE,
     BISHOP_DAMAGE, BISHOP_HEALTH, BISHOP_NAME, BISHOP_RANGE, BISHOP_VALUE,
