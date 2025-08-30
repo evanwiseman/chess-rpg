@@ -1,6 +1,6 @@
 import unittest
 
-from src.stats import ModifierType, Modifier, Stat
+from src.stats import Modifier, ModifierType, Stat
 
 
 class TestStat(unittest.TestCase):
@@ -102,7 +102,3 @@ class TestStat(unittest.TestCase):
             expired[0],
             Modifier("mod1", 10, ModifierType.FLAT, "test", 0)
         )
-
-
-if __name__ == "__main__":
-    unittest.main()

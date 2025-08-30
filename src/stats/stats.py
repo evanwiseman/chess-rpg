@@ -58,11 +58,11 @@ class Stats:
                 expired[name] = expired_mods
         return expired
 
-    def to_dict(self) -> dict:
+    def serialize(self) -> dict:
         return {name: stat.to_dict() for name, stat in self._stats.items()}
 
     @classmethod
-    def from_dict(cls, data: dict) -> 'Stats':
+    def deserialize(cls, data: dict) -> 'Stats':
         stats = cls()
         for name, stat_data in data.items():
             stats[name] = Stat.from_dict(stat_data)

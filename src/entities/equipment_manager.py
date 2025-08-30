@@ -2,11 +2,12 @@ import copy
 
 from typing import List
 
+from .entity import Entity
 from .items import Equipment
 from .item_manager import ItemManager
 
 
-class EquipmentManager:
+class EquipmentManager(Entity):
     def __init__(self, item_manager: ItemManager):
         self._equipped: dict[str, Equipment] = {}
         self._item_manager = item_manager

@@ -6,7 +6,7 @@ from src.stats import Modifier, ModifierType, Stats
 class TestStats(unittest.TestCase):
     def test_creation(self):
         stats = Stats()
-        self.assertEqual(stats.to_dict(), {})
+        self.assertEqual(stats.serialize(), {})
 
     def test_add(self):
         stats = Stats()
@@ -14,7 +14,7 @@ class TestStats(unittest.TestCase):
         stats.add("stat1", 10)
 
         self.assertDictEqual(
-            stats.to_dict(),
+            stats.serialize(),
             {
                 "stat1": {
                     "name": "stat1",
@@ -34,7 +34,7 @@ class TestStats(unittest.TestCase):
         stat3 = stats.add("stat3", 10)
 
         self.assertDictEqual(
-            stats.to_dict(),
+            stats.serialize(),
             {
                 "stat1": {
                     "name": "stat1",
@@ -72,7 +72,7 @@ class TestStats(unittest.TestCase):
         stats["stat1"].add_modifier(modifier)
 
         self.assertDictEqual(
-            stats.to_dict(),
+            stats.serialize(),
             {
                 "stat1": {
                     "name": "stat1",

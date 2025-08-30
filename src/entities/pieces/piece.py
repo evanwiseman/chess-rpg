@@ -4,7 +4,7 @@ from src.stats import Stats
 
 class Piece(Entity):
     def __init__(self, name: str):
-        super().__init__(name)
+        self.name = name
         self.stats = Stats()
         self.item_manager = ItemManager()
         self.equipment_manager = EquipmentManager(self.item_manager)

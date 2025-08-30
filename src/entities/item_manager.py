@@ -2,10 +2,11 @@ import copy
 
 from typing import Dict, List
 
+from .entity import Entity
 from .items import Item
 
 
-class ItemManager:
+class ItemManager(Entity):
     def __init__(self):
         self._items: Dict[str, Item] = {}
 
