@@ -1,6 +1,6 @@
 from typing import List, Optional
 
-from .constants import BOARD_ROW_SIZE, BOARD_COL_SIZE
+from src.constants import BOARD_ROW_SIZE, BOARD_COL_SIZE
 from src.entities import Entity
 
 

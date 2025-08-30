@@ -1,6 +1,6 @@
-from src.entities import Entity
+from .item import Item
 
 
-class Item(Entity):
+class Equipment(Item):
     def __init__(self, name):
         super().__init__(name)
