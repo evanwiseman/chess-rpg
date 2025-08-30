@@ -1,12 +1,7 @@
-from enum import Enum
-
 from src.entities import Entity
 
 
-class ItemType(Enum):
-    CONSUMABLE = "consumable"
-
-
 class Item(Entity):
-    def __init__(self, name):
+    def __init__(self, name, quantity):
         super().__init__(name)
+        self.quantity = quantity

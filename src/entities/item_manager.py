@@ -1,29 +1,52 @@
-from typing import List
+import copy
+
+from typing import Dict, List
 
 from .items import Item
 
 
 class ItemManager:
     def __init__(self):
-        self._items = {}
+        self._items: Dict[str, Item] = {}
 
-    def __getitem__(self, name: str) -> Item:
-        item = self._items.get(name.lower())
+    def get_item(self, name: str) -> Item:
+        key = name.lower()
+        item = self._items.get(key)
         if not item:
-            raise KeyError(f"Item '{item}' not found.")
+            raise KeyError(f"Item '{name}' not found.")
         return item
 
-    def __setitem__(self, name: str, item: Item):
-        self._items[name.lower()] = item
+    def add_item(self, name: str, item: Item):
+        key = name.lower()
+        if name not in self._items:
+            self._items[key] = item
+        else:
+            self._items[key].quantity += item.quantity
 
-    def __contains__(self, name: str) -> bool:
-        return name.lower() in self._items
+    def remove_item(self, name: str, quantity: int | None = None) -> Item:
+        key = name.lower()
+        item = self._items.get(key)
+        if not item:
+            raise KeyError(f"Item '{name}' not found.")
 
-    def __iter__(self):
-        return iter(self._items.keys())
+        if quantity:
+            if item.quantity > quantity:
+                item.quantity -= quantity
+                new_item = copy.deepcopy(item)
+                new_item.quantity = quantity
+                return new_item
+            elif item.quantity < quantity:
+                raise ValueError(
+                    f"Item '{name}' cannot remove {quantity}/{item.quantity}."
+                )
+            # equal case -> fall through below
 
-    def __len__(self) -> int:
-        return len(self._items)
+        # either no quantity given OR equal quantity → remove all
+        del self._items[key]
+        return item
 
-    def item_list(self) -> List[Item]:
-        return list(self._items.keys())
+    def get_item_name_list(self) -> List[str]:
+        return list[self._items.keys()]
+
+    def get_item_list(self) -> List[Item]:
+        return list[self._items.values()]
