@@ -1,4 +1,10 @@
+from enum import Enum
+
 from src.entities import Entity
+
+
+class ItemType(Enum):
+    CONSUMABLE = "consumable"
 
 
 class Item(Entity):
