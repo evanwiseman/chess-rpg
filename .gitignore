@@ -1,1 +1,28 @@
+# --- Python standard ignores ---
 __pycache__/
+*.py[cod]
+*.pyo
+*.pyd
+*.so
+*.dll
+
+# Virtualenvs (if you still use them)
+.venv/
+venv/
+ENV/=
+
+# OS junk
+.DS_Store
+Thumbs.db
+
+# --- uv-specific ignores ---
+# uv's build caches (these can always be regenerated)
+.uv/
+
+# If uv is configured to download Python builds locally
+.python-version
+
+# --- Common extras (if relevant) ---
+*.log
+dist/
+build/
