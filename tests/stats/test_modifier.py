@@ -26,3 +26,7 @@ class TestModifier(unittest.TestCase):
         modifier = Modifier("modifier", 2, ModifierType.MULTIPLIER)
         result = modifier.apply(1)
         self.assertEqual(result, 2)
+
+
+if __name__ == "__main__":
+    unittest.main()

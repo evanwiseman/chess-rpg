@@ -5,7 +5,7 @@ from src.entities.items import Item
 
 class TestItem(unittest.TestCase):
     def test_creation(self):
-        item = Item("item", "description")
+        item = Item("item")
         self.assertIsInstance(item, Item)
         self.assertGreaterEqual(item.id, 1)
         self.assertEqual(item.name, "item")
@@ -13,7 +13,7 @@ class TestItem(unittest.TestCase):
         self.assertEqual(item.is_alive, False)
 
     def test_modify(self):
-        item = Item("item", "description")
+        item = Item("item")
         item.name = "helmet"
         item.description = "this is a helmet"
         item.quantity = 3

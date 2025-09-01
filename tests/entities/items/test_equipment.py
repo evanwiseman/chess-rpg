@@ -8,6 +8,7 @@ class TestEquipment(unittest.TestCase):
         equipment = Equipment("equipment", EquipmentSlot.ARMOR)
         self.assertEqual(equipment.name, "equipment")
         self.assertEqual(equipment.is_alive, False)
+        self.assertEqual(equipment.slot, EquipmentSlot.ARMOR)
         self.assertEqual(equipment.quantity, 1)
         self.assertGreaterEqual(equipment.id, 1)
 

@@ -102,3 +102,7 @@ class TestStat(unittest.TestCase):
             expired[0],
             Modifier("mod1", 10, ModifierType.FLAT, "test", 0)
         )
+
+
+if __name__ == "__main__":
+    unittest.main()
