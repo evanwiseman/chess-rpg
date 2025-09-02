@@ -29,7 +29,7 @@ class Rules:
                         actor=piece)
                     )
                 return False  # continue ray
-            if not player.owns(target.id):
+            if not player.owns(target):
                 moves.append(
                     Move(
                         start=location,

@@ -19,27 +19,14 @@ class TestRules(unittest.TestCase):
         board = Board()
 
         bishop = place(board, player, Bishop, (7, 2))
-        valid_moves = Rules.get_valid_moves(
-            bishop,
-            board,
-            player
-        )
+        valid_moves = Rules.get_valid_moves(bishop, board, player)
+
         self.assertIn(
-            Move(
-                start=(7, 2),
-                end=(2, 7),
-                move_type=MoveType.MOVE,
-                actor=bishop
-            ),
+            Move((7, 2), (2, 7), MoveType.MOVE, bishop),
             valid_moves
         )
         self.assertIn(
-            Move(
-                start=(7, 2),
-                end=(5, 0),
-                move_type=MoveType.MOVE,
-                actor=bishop
-            ),
+            Move((7, 2), (5, 0), MoveType.MOVE, bishop),
             valid_moves
         )
 
@@ -48,56 +35,54 @@ class TestRules(unittest.TestCase):
         board = Board()
 
         bishop = place(board, player, Bishop, (7, 2))
-
         place(board, player, Pawn, (6, 3))
         place(board, player, Pawn, (6, 1))
+        valid_moves = Rules.get_valid_moves(bishop, board, player)
 
-        valid_moves = Rules.get_valid_moves(
-            bishop,
-            board,
-            player
-        )
         self.assertListEqual(valid_moves, [])
 
     def test_bishop_open(self):
         board = Board()
         player = Player(Team.WHITE)
-        
+
+        bishop = place(board, player, Bishop, (4, 4))
+        valid_moves = Rules.get_valid_moves(bishop, board, player)
+
+        self.assertIn(
+            Move((4, 4), (0, 0), MoveType.MOVE, bishop),
+            valid_moves
+        )
+
+        self.assertIn(
+            Move((4, 4), (7, 7), MoveType.MOVE, bishop),
+            valid_moves
+        )
+        self.assertIn(
+            Move((4, 4), (1, 7), MoveType.MOVE, bishop),
+            valid_moves
+        )
+        self.assertIn(
+            Move((4, 4), (7, 1), MoveType.MOVE, bishop),
+            valid_moves
+        )
+
     def test_knight_default(self):
         player = Player(Team.WHITE)
         board = Board()
 
         knight = place(board, player, Knight, (7, 1))
-        valid_moves = Rules.get_valid_moves(
-            knight,
-            board,
-            player
-        )
+        valid_moves = Rules.get_valid_moves(knight, board, player)
+
         self.assertIn(
-            Move(
-                start=(7, 1),
-                end=(6, 3),
-                move_type=MoveType.MOVE,
-                actor=knight
-            ),
+            Move((7, 1), (6, 3), MoveType.MOVE, knight),
             valid_moves
         )
         self.assertIn(
-            Move(
-                start=(7, 1),
-                end=(5, 2),
-                move_type=MoveType.MOVE,
-                actor=knight
-            ),
+            Move((7, 1), (5, 2), MoveType.MOVE, knight),
             valid_moves
         )
         self.assertIn(
-            Move(
-                start=(7, 1),
-                end=(5, 0),
-                move_type=MoveType.MOVE,
-                actor=knight
-            ),
+            Move((7, 1), (5, 0), MoveType.MOVE, knight),
             valid_moves
         )
 
@@ -109,14 +94,48 @@ class TestRules(unittest.TestCase):
         place(board, player, Pawn, (6, 3))
         place(board, player, Pawn, (5, 2))
         place(board, player, Pawn, (5, 0))
+        valid_moves = Rules.get_valid_moves(knight, board, player)
 
-        self.assertEqual(
-            Rules.get_valid_moves(
-                knight,
-                board,
-                player
-            ),
-            []
+        self.assertEqual(valid_moves, [])
+
+    def test_knight_open(self):
+        board = Board()
+        player = Player(Team.WHITE)
+
+        knight = place(board, player, Knight, (4, 4))
+        valid_moves = Rules.get_valid_moves(knight, board, player)
+
+        self.assertIn(
+            Move((4, 4), (2, 3), MoveType.MOVE, knight),
+            valid_moves
+        )
+        self.assertIn(
+            Move((4, 4), (3, 2), MoveType.MOVE, knight),
+            valid_moves
+        )
+        self.assertIn(
+            Move((4, 4), (5, 6), MoveType.MOVE, knight),
+            valid_moves
+        )
+        self.assertIn(
+            Move((4, 4), (6, 5), MoveType.MOVE, knight),
+            valid_moves
+        )
+        self.assertIn(
+            Move((4, 4), (6, 3), MoveType.MOVE, knight),
+            valid_moves
+        )
+        self.assertIn(
+            Move((4, 4), (5, 2), MoveType.MOVE, knight),
+            valid_moves
+        )
+        self.assertIn(
+            Move((4, 4), (2, 5), MoveType.MOVE, knight),
+            valid_moves
+        )
+        self.assertIn(
+            Move((4, 4), (3, 6), MoveType.MOVE, knight),
+            valid_moves
         )
 
     def test_queen_default(self):
@@ -124,54 +143,26 @@ class TestRules(unittest.TestCase):
         player = Player(Team.WHITE)
 
         queen = place(board, player, Queen, (7, 4))
-        valid_moves = Rules.get_valid_moves(
-            queen,
-            board,
-            player
-        )
+        valid_moves = Rules.get_valid_moves(queen, board, player)
+
         self.assertIn(
-            Move(
-                start=(7, 4),
-                end=(0, 4),
-                move_type=MoveType.MOVE,
-                actor=queen
-            ),
+            Move((7, 4), (0, 4), MoveType.MOVE, queen),
             valid_moves
         )
         self.assertIn(
-            Move(
-                start=(7, 4),
-                end=(7, 7),
-                move_type=MoveType.MOVE,
-                actor=queen
-            ),
+            Move((7, 4), (7, 7), MoveType.MOVE, queen),
             valid_moves
         )
         self.assertIn(
-            Move(
-                start=(7, 4),
-                end=(7, 0),
-                move_type=MoveType.MOVE,
-                actor=queen
-            ),
+            Move((7, 4), (7, 0), MoveType.MOVE, queen),
             valid_moves
         )
         self.assertIn(
-            Move(
-                start=(7, 4),
-                end=(3, 0),
-                move_type=MoveType.MOVE,
-                actor=queen
-            ),
+            Move((7, 4), (3, 0), MoveType.MOVE, queen),
             valid_moves
         )
         self.assertIn(
-            Move(
-                start=(7, 4),
-                end=(4, 7),
-                move_type=MoveType.MOVE,
-                actor=queen
-            ),
+            Move((7, 4), (4, 7), MoveType.MOVE, queen),
             valid_moves
         )
 
@@ -185,13 +176,50 @@ class TestRules(unittest.TestCase):
         place(board, player, Pawn, (6, 3))
         place(board, player, Pawn, (6, 5))
         place(board, player, Bishop, (7, 5))
-        self.assertListEqual(
-            Rules.get_valid_moves(
-                queen,
-                board,
-                player
-            ),
-            []
+        valid_moves = Rules.get_valid_moves(queen, board, player)
+
+        self.assertListEqual(valid_moves, [])
+
+    def test_queen_open(self):
+        board = Board()
+        player = Player(Team.WHITE)
+
+        queen = place(board, player, Queen, (4, 4))
+        valid_moves = Rules.get_valid_moves(queen, board, player)
+
+        self.assertIn(
+            Move((4, 4), (0, 0), MoveType.MOVE, queen),
+            valid_moves
+        )
+
+        self.assertIn(
+            Move((4, 4), (7, 7), MoveType.MOVE, queen),
+            valid_moves
+        )
+        self.assertIn(
+            Move((4, 4), (1, 7), MoveType.MOVE, queen),
+            valid_moves
+        )
+        self.assertIn(
+            Move((4, 4), (7, 1), MoveType.MOVE, queen),
+            valid_moves
+        )
+        self.assertIn(
+            Move((4, 4), (4, 0), MoveType.MOVE, queen),
+            valid_moves
+        )
+
+        self.assertIn(
+            Move((4, 4), (0, 4), MoveType.MOVE, queen),
+            valid_moves
+        )
+        self.assertIn(
+            Move((4, 4), (4, 7), MoveType.MOVE, queen),
+            valid_moves
+        )
+        self.assertIn(
+            Move((4, 4), (7, 4), MoveType.MOVE, queen),
+            valid_moves
         )
 
     def test_rook_default(self):
@@ -199,27 +227,14 @@ class TestRules(unittest.TestCase):
         player = Player(Team.WHITE)
 
         rook = place(board, player, Rook, (7, 0))
-        valid_moves = Rules.get_valid_moves(
-            rook,
-            board,
-            player
-        )
+        valid_moves = Rules.get_valid_moves(rook, board, player)
+
         self.assertIn(
-            Move(
-                start=(7, 0),
-                end=(0, 0),
-                move_type=MoveType.MOVE,
-                actor=rook
-            ),
+            Move((7, 0), (0, 0), MoveType.MOVE, rook),
             valid_moves
         )
         self.assertIn(
-            Move(
-                start=(7, 0),
-                end=(7, 7),
-                move_type=MoveType.MOVE,
-                actor=rook
-            ),
+            Move((7, 0), (7, 7), MoveType.MOVE, rook),
             valid_moves
         )
 
@@ -228,14 +243,33 @@ class TestRules(unittest.TestCase):
         player = Player(Team.WHITE)
 
         rook = place(board, player, Rook, (7, 0))
-
         place(board, player, Pawn, (6, 0))
         place(board, player, Knight, (7, 1))
-        self.assertListEqual(
-            Rules.get_valid_moves(
-                rook,
-                board,
-                player
-            ),
-            []
+        valid_moves = Rules.get_valid_moves(rook, board, player)
+
+        self.assertListEqual(valid_moves, [])
+
+    def test_rook_open(self):
+        board = Board()
+        player = Player(Team.WHITE)
+
+        rook = place(board, player, Rook, (4, 4))
+        valid_moves = Rules.get_valid_moves(rook, board, player)
+
+        self.assertIn(
+            Move((4, 4), (4, 0), MoveType.MOVE, rook),
+            valid_moves
+        )
+
+        self.assertIn(
+            Move((4, 4), (0, 4), MoveType.MOVE, rook),
+            valid_moves
+        )
+        self.assertIn(
+            Move((4, 4), (4, 7), MoveType.MOVE, rook),
+            valid_moves
+        )
+        self.assertIn(
+            Move((4, 4), (7, 4), MoveType.MOVE, rook),
+            valid_moves
         )

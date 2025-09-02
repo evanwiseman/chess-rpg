@@ -60,16 +60,22 @@ class Board:
         del self._id_location_map[entity.id]
         return entity
 
-    def remove_entity(self, id: int) -> Entity:
+    def remove_entity(self, entity: Entity) -> Entity:
+        self.remove_entity_by_id(entity.id)
+
+    def remove_entity_by_id(self, id: int) -> Entity:
         if id not in self._id_location_map:
-            raise KeyError(f"Error: (Board.remove_entity) Invalid id {id}.")
+            raise KeyError(
+                f"Error: (Board.remove_entity_by_id)"
+                f"Invalid id {id}."
+            )
         row, col = self._id_location_map[id]
         del self._id_location_map[id]
 
         entity = self._board[row][col]
         if not entity:
             raise ValueError(
-                "Error: (Board.remove_entity)"
+                "Error: (Board.remove_entity_by_id)"
                 f"no entity found at {(row, col)}"
             )
         self._board[row][col] = None
@@ -79,34 +85,22 @@ class Board:
         row, col = location
         return self._board[row][col]
 
-    def get_entity(self, id: int) -> Entity:
+    def get_entity_by_id(self, id: int) -> Optional[Entity]:
         if id not in self._id_location_map:
-            raise KeyError(
-                "Error: (Board.get_entity)",
-                f"couldn't resolve entity id {id}"
-            )
+            return None
         row, col = self._id_location_map[id]
         entity = self._board[row][col]
         if not entity:
-            raise ValueError(
-                "Error: (Board.get_entity)",
-                f"no entity found at {(row, col)}"
-            )
+            return None
         return entity
 
     def get_entity_location(self, entity: Entity) -> Tuple[int, int]:
         if not Entity:
-            raise ValueError(
-                "Error: (Board.get_entity_location)",
-                "couldn't resolve entity."
-            )
+            return (-1, -1)
 
         id = entity.id
         if id not in self._id_location_map:
-            raise KeyError(
-                "Error: (Board.get_entity_location)",
-                f"couldn't resolve entity id {id}"
-            )
+            return (-1, -1)
         return self._id_location_map[id]
 
     def is_in_bounds(self, location: Tuple[int, int]) -> bool:

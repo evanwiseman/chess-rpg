@@ -1,6 +1,11 @@
+from enum import Enum
 from typing import Dict
 from src.entities.pieces import Piece
-from .team import Team
+
+
+class Team(Enum):
+    WHITE = 1,
+    BLACK = -1
 
 
 class Player:
@@ -11,9 +16,9 @@ class Player:
     def add_piece(self, piece: Piece):
         self.pieces[piece.id] = piece
 
-    def remove_piece(self, piece_id: int):
-        if piece_id in self.pieces:
-            del self.pieces[piece_id]
+    def remove_piece(self, piece: Piece):
+        if piece.id in self.pieces:
+            del self.pieces[piece.id]
 
-    def owns(self, piece_id: int) -> bool:
-        return piece_id in self.pieces
+    def owns(self, piece: Piece) -> bool:
+        return piece.id in self.pieces
