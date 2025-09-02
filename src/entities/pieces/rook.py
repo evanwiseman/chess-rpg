@@ -8,7 +8,14 @@ from .piece import Piece
 class Rook(Piece):
     def __init__(self):
         super().__init__(ROOK_NAME)
-        self.stats.add("value", ROOK_VALUE)
-        self.stats.add("max_health", ROOK_HEALTH)
-        self.stats.add("damage", ROOK_DAMAGE)
-        self.stats.add("range", ROOK_RANGE)
+        self.directions = [
+            (1, 0),
+            (0, 1),
+            (-1, 0),
+            (0, -1)
+        ]
+
+        self.stats["value"].base_value = ROOK_VALUE
+        self.stats["max_health"].base_value = ROOK_HEALTH
+        self.stats["damage"].base_value = ROOK_DAMAGE
+        self.stats["range"].base_value = ROOK_RANGE

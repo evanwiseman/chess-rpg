@@ -38,15 +38,6 @@ class Stats:
     def __len__(self) -> int:
         return len(self._stats)
 
-    def add(self, name: str, base_value: float, **kwargs) -> Stat:
-        """
-        Create/Update a stat (will override the stat).
-        Example: stats.add("health", 100, min_value=0, max_value=200)
-        """
-        stat = Stat(name, base_value, **kwargs)
-        self[name] = stat
-        return stat
-
     def update_durations(self) -> Dict[str, List[Modifier]]:
         """
         Tick durations for all stats, returning expired modifiers per stat.

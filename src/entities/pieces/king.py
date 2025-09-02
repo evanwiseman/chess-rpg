@@ -8,7 +8,18 @@ from .piece import Piece
 class King(Piece):
     def __init__(self):
         super().__init__(KING_NAME)
-        self.stats.add("value", KING_VALUE)
-        self.stats.add("max_health", KING_HEALTH)
-        self.stats.add("damage", KING_DAMAGE)
-        self.stats.add("range", KING_RANGE)
+        self.directions = [
+            (1, 0),
+            (0, 1),
+            (-1, 0),
+            (0, -1),
+            (1, 1),
+            (1, -1),
+            (-1, 1),
+            (-1, -1)
+        ]
+
+        self.stats["value"].base_value = KING_VALUE
+        self.stats["max_health"].base_value = KING_HEALTH
+        self.stats["damage"].base_value = KING_DAMAGE
+        self.stats["range"].base_value = KING_RANGE

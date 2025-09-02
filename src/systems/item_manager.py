@@ -54,7 +54,7 @@ class ItemManager:
         key = self._normalize_name(item)
         return self._items.get(key)
 
-    def add_item(self, item: Union[Item, str]):
+    def add_item(self, item: Item):
         """
         Add an item. Stacks if it already exists.
 

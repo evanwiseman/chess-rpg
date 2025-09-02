@@ -1,6 +1,6 @@
 import unittest
 
-from src.stats import Modifier, ModifierType, Stats
+from src.stats import Modifier, ModifierType, Stat, Stats
 
 
 class TestStats(unittest.TestCase):
@@ -11,13 +11,13 @@ class TestStats(unittest.TestCase):
     def test_add(self):
         stats = Stats()
 
-        stats.add("stat1", 10)
+        stats["stat1"] = Stat("Stat 1", 10)
 
         self.assertDictEqual(
             stats.serialize(),
             {
                 "stat1": {
-                    "name": "stat1",
+                    "name": "Stat 1",
                     "base_value": 10,
                     "min_value": 0,
                     "max_value": float('inf'),
@@ -29,29 +29,29 @@ class TestStats(unittest.TestCase):
     def test_add_multiple(self):
         stats = Stats()
 
-        stat1 = stats.add("stat1", 10)
-        stat2 = stats.add("stat2", 10)
-        stat3 = stats.add("stat3", 10)
+        stats["stat1"] = Stat("Stat 1", 10)
+        stats["stat2"] = Stat("Stat 2", 10)
+        stats["stat3"] = Stat("Stat 3", 10)
 
         self.assertDictEqual(
             stats.serialize(),
             {
                 "stat1": {
-                    "name": "stat1",
+                    "name": "Stat 1",
                     "base_value": 10,
                     "min_value": 0,
                     "max_value": float('inf'),
                     "modifiers": {}
                 },
                 "stat2": {
-                    "name": "stat2",
+                    "name": "Stat 2",
                     "base_value": 10,
                     "min_value": 0,
                     "max_value": float('inf'),
                     "modifiers": {}
                 },
                 "stat3": {
-                    "name": "stat3",
+                    "name": "Stat 3",
                     "base_value": 10,
                     "min_value": 0,
                     "max_value": float('inf'),
@@ -59,14 +59,11 @@ class TestStats(unittest.TestCase):
                 }
             }
         )
-        self.assertEqual(stat1, stats["stat1"])
-        self.assertEqual(stat2, stats["stat2"])
-        self.assertEqual(stat3, stats["stat3"])
 
     def test_add_modifier(self):
         stats = Stats()
 
-        stats.add("stat1", 10)
+        stats["stat1"] = Stat("Stat 1", 10)
 
         modifier = Modifier("mod1", 10, ModifierType.FLAT)
         stats["stat1"].add_modifier(modifier)
@@ -75,7 +72,7 @@ class TestStats(unittest.TestCase):
             stats.serialize(),
             {
                 "stat1": {
-                    "name": "stat1",
+                    "name": "Stat 1",
                     "base_value": 10,
                     "min_value": 0,
                     "max_value": float('inf'),

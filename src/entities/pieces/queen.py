@@ -8,7 +8,17 @@ from .piece import Piece
 class Queen(Piece):
     def __init__(self):
         super().__init__(QUEEN_NAME)
-        self.stats.add("value", QUEEN_VALUE)
-        self.stats.add("max_health", QUEEN_HEALTH)
-        self.stats.add("damage", QUEEN_DAMAGE)
-        self.stats.add("range", QUEEN_RANGE)
+        self.directions = [
+            (1, 0),
+            (0, 1),
+            (-1, 0),
+            (0, -1),
+            (1, 1),
+            (1, -1),
+            (-1, 1),
+            (-1, -1)
+        ]
+        self.stats["value"].base_value = QUEEN_VALUE
+        self.stats["max_health"].base_value = QUEEN_HEALTH
+        self.stats["damage"].base_value = QUEEN_DAMAGE
+        self.stats["range"].base_value = QUEEN_RANGE

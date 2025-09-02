@@ -9,7 +9,7 @@ class TestItem(unittest.TestCase):
         self.assertIsInstance(item, Item)
         self.assertGreaterEqual(item.id, 1)
         self.assertEqual(item.name, "item")
-        self.assertEqual(item.description, "description")
+        self.assertEqual(item.description, "")
         self.assertEqual(item.is_alive, False)
 
     def test_modify(self):

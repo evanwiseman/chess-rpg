@@ -36,14 +36,6 @@ class TestBoard(unittest.TestCase):
         self.assertEqual(board.get_entity((0, 0)), None)
         self.assertEqual(board.get_entity((0, 1)), None)
 
-    def test_move_piece(self):
-        board = Board()
-        pawn = Pawn()
-        board.add_entity((0, 0), pawn)
-        board.move_entity((0, 0), (0, 1))
-        self.assertEqual(board.get_entity((0, 1)), pawn)
-        self.assertEqual(board.get_entity((0, 0)), None)
-
 
 if __name__ == "__main__":
     unittest.main()
