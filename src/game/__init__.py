@@ -5,6 +5,9 @@ from .player import Player, Team
 from .rules import Rules
 
 __all__ = [
-    "Board", "Combat", "Move", "MoveResult", "MoveStatus", "MoveType",
-    "Player", "Rules", "Team"
+    "Board",
+    "Combat",
+    "Move", "MoveResult", "MoveStatus", "MoveType",
+    "Player", "Team",
+    "Rules"
 ]

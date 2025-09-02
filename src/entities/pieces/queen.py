@@ -20,5 +20,5 @@ class Queen(Piece):
         ]
         self.stats["value"].base_value = QUEEN_VALUE
         self.stats["max_health"].base_value = QUEEN_HEALTH
-        self.stats["damage"].base_value = QUEEN_DAMAGE
-        self.stats["range"].base_value = QUEEN_RANGE
+        self.stats["attack_damage"].base_value = QUEEN_DAMAGE
+        self.stats["move_range"].base_value = QUEEN_RANGE

@@ -8,7 +8,6 @@ class TestEntity(unittest.TestCase):
         entity1 = Entity("test1")
         self.assertGreaterEqual(entity1.id, 1)
         self.assertEqual(entity1.name, "test1")
-        self.assertFalse(entity1.is_alive)
 
     def test_multiple_entities(self):
         entity2 = Entity("test2")

@@ -1,8 +1,9 @@
 from typing import Tuple, List
 
+from src.actions import AttackBook, SpellBook
 from src.entities import Entity
-from src.stats import Stats, Stat
-from src.systems import ItemManager, EquipmentManager
+from src.stats import Resource, Stat, Stats
+from src.systems import EquipmentManager
 
 
 class Piece(Entity):
@@ -12,11 +13,19 @@ class Piece(Entity):
 
         self.stats = Stats()
         self.stats["value"] = Stat("Value", 0)
-        self.stats["max_health"] = Stat("Max Health", 0)
-        self.stats["damage"] = Stat("Damage", 0)
-        self.stats["range"] = Stat("Range", 0)
+        self.stats["move_range"] = Stat("Move Range", 0)
 
-        self._item_manager = ItemManager()
+        # Set resource pool linked to stats
+        self.stats["max_health"] = Stat("Max Health", 0)
+        self.health = Resource(lambda: self.stats["max_health"].value)
+        self.stats["max_mana"] = Stat("Max Mana", 0)
+        self.mana = Resource(lambda: self.stats["max_mana"].value)
+        self.stats["max_stamina"] = Stat("Max Stamina", 0)
+        self.stamina = Resource(lambda: self.stats["max_stamina"].value)
+
+        self.spell_book = SpellBook()
+        self.attack_book = AttackBook()
+
         self._equipment_manager = EquipmentManager()
 
     def __eq__(self, other: 'Piece'):
@@ -24,3 +33,28 @@ class Piece(Entity):
             self.name == other.name
             and self.stats == other.stats
         )
+
+    def get_move_range(self):
+        return self.stats["move_range"].value
+
+    def get_attack_range(self):
+        return self.stats["attack_range"].value
+
+    def get_interact_range(self):
+        return self.stats["interact_range"].value
+
+    # Resource Methods
+    def take_damage(self, amount: int):
+        self.health.take(amount)
+
+    def heal(self, amount: int):
+        self.health.give(amount)
+
+    def is_alive(self):
+        return not self.health.is_depleted()
+
+    def use_mana(self, amount: int):
+        self.mana.take(amount)
+
+    def restore_mana(self, amount: int):
+        self.mana.give(amount)

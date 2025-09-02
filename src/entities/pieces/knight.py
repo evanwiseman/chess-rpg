@@ -21,5 +21,5 @@ class Knight(Piece):
 
         self.stats["value"].base_value = KNIGHT_VALUE
         self.stats["max_health"].base_value = KNIGHT_HEALTH
-        self.stats["damage"].base_value = KNIGHT_DAMAGE
-        self.stats["range"].base_value = KNIGHT_RANGE
+        self.stats["attack_damage"].base_value = KNIGHT_DAMAGE
+        self.stats["move_range"].base_value = KNIGHT_RANGE

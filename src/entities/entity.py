@@ -5,7 +5,6 @@ class Entity:
         self._id = Entity._next_id
         Entity._next_id += 1
         self.name = name
-        self.is_alive = False
 
     def __repr__(self):
         return f"<Entity {self.name} ({self.id})>"

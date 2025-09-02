@@ -1,8 +1,8 @@
-from src.entities import Entity
+from src.entities import Interactable
 from src.stats import Stats
 
 
-class Item(Entity):
+class Item(Interactable):
     def __init__(self, name: str, description: str = "", quantity: int = 1):
         super().__init__(name)
         self.is_alive = False

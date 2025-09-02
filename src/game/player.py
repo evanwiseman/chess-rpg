@@ -1,6 +1,7 @@
 from enum import Enum
 from typing import Dict
 from src.entities.pieces import Piece
+from src.systems import ItemManager
 
 
 class Team(Enum):
@@ -12,6 +13,7 @@ class Player:
     def __init__(self, team: Team):
         self.team = team
         self.pieces: Dict[int, Piece] = {}
+        self.inventory = ItemManager()
 
     def add_piece(self, piece: Piece):
         self.pieces[piece.id] = piece

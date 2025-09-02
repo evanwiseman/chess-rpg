@@ -13,13 +13,13 @@ def place(board: Board, player: Player, piece_cls: type, pos: tuple[int, int]):
     return piece
 
 
-class TestRules(unittest.TestCase):
+class TestRulesMoves(unittest.TestCase):
     def test_bishop_default(self):
         player = Player(Team.WHITE)
         board = Board()
 
         bishop = place(board, player, Bishop, (7, 2))
-        valid_moves = Rules.get_valid_moves(bishop, board, player)
+        valid_moves = Rules.get_valid_moves(bishop, board)
 
         self.assertIn(
             Move((7, 2), (2, 7), MoveType.MOVE, bishop),
@@ -37,7 +37,7 @@ class TestRules(unittest.TestCase):
         bishop = place(board, player, Bishop, (7, 2))
         place(board, player, Pawn, (6, 3))
         place(board, player, Pawn, (6, 1))
-        valid_moves = Rules.get_valid_moves(bishop, board, player)
+        valid_moves = Rules.get_valid_moves(bishop, board)
 
         self.assertListEqual(valid_moves, [])
 
@@ -46,7 +46,7 @@ class TestRules(unittest.TestCase):
         player = Player(Team.WHITE)
 
         bishop = place(board, player, Bishop, (4, 4))
-        valid_moves = Rules.get_valid_moves(bishop, board, player)
+        valid_moves = Rules.get_valid_moves(bishop, board)
 
         self.assertIn(
             Move((4, 4), (0, 0), MoveType.MOVE, bishop),
@@ -71,7 +71,7 @@ class TestRules(unittest.TestCase):
         board = Board()
 
         knight = place(board, player, Knight, (7, 1))
-        valid_moves = Rules.get_valid_moves(knight, board, player)
+        valid_moves = Rules.get_valid_moves(knight, board)
 
         self.assertIn(
             Move((7, 1), (6, 3), MoveType.MOVE, knight),
@@ -94,7 +94,7 @@ class TestRules(unittest.TestCase):
         place(board, player, Pawn, (6, 3))
         place(board, player, Pawn, (5, 2))
         place(board, player, Pawn, (5, 0))
-        valid_moves = Rules.get_valid_moves(knight, board, player)
+        valid_moves = Rules.get_valid_moves(knight, board)
 
         self.assertEqual(valid_moves, [])
 
@@ -103,7 +103,7 @@ class TestRules(unittest.TestCase):
         player = Player(Team.WHITE)
 
         knight = place(board, player, Knight, (4, 4))
-        valid_moves = Rules.get_valid_moves(knight, board, player)
+        valid_moves = Rules.get_valid_moves(knight, board)
 
         self.assertIn(
             Move((4, 4), (2, 3), MoveType.MOVE, knight),
@@ -143,7 +143,7 @@ class TestRules(unittest.TestCase):
         player = Player(Team.WHITE)
 
         queen = place(board, player, Queen, (7, 4))
-        valid_moves = Rules.get_valid_moves(queen, board, player)
+        valid_moves = Rules.get_valid_moves(queen, board)
 
         self.assertIn(
             Move((7, 4), (0, 4), MoveType.MOVE, queen),
@@ -176,7 +176,7 @@ class TestRules(unittest.TestCase):
         place(board, player, Pawn, (6, 3))
         place(board, player, Pawn, (6, 5))
         place(board, player, Bishop, (7, 5))
-        valid_moves = Rules.get_valid_moves(queen, board, player)
+        valid_moves = Rules.get_valid_moves(queen, board)
 
         self.assertListEqual(valid_moves, [])
 
@@ -185,7 +185,7 @@ class TestRules(unittest.TestCase):
         player = Player(Team.WHITE)
 
         queen = place(board, player, Queen, (4, 4))
-        valid_moves = Rules.get_valid_moves(queen, board, player)
+        valid_moves = Rules.get_valid_moves(queen, board)
 
         self.assertIn(
             Move((4, 4), (0, 0), MoveType.MOVE, queen),
@@ -227,7 +227,7 @@ class TestRules(unittest.TestCase):
         player = Player(Team.WHITE)
 
         rook = place(board, player, Rook, (7, 0))
-        valid_moves = Rules.get_valid_moves(rook, board, player)
+        valid_moves = Rules.get_valid_moves(rook, board)
 
         self.assertIn(
             Move((7, 0), (0, 0), MoveType.MOVE, rook),
@@ -245,7 +245,7 @@ class TestRules(unittest.TestCase):
         rook = place(board, player, Rook, (7, 0))
         place(board, player, Pawn, (6, 0))
         place(board, player, Knight, (7, 1))
-        valid_moves = Rules.get_valid_moves(rook, board, player)
+        valid_moves = Rules.get_valid_moves(rook, board)
 
         self.assertListEqual(valid_moves, [])
 
@@ -254,7 +254,7 @@ class TestRules(unittest.TestCase):
         player = Player(Team.WHITE)
 
         rook = place(board, player, Rook, (4, 4))
-        valid_moves = Rules.get_valid_moves(rook, board, player)
+        valid_moves = Rules.get_valid_moves(rook, board)
 
         self.assertIn(
             Move((4, 4), (4, 0), MoveType.MOVE, rook),
@@ -273,3 +273,7 @@ class TestRules(unittest.TestCase):
             Move((4, 4), (7, 4), MoveType.MOVE, rook),
             valid_moves
         )
+
+
+if __name__ == "__main__":
+    unittest.main()

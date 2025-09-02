@@ -11,5 +11,5 @@ class Pawn(Piece):
 
         self.stats["value"].base_value = PAWN_VALUE
         self.stats["max_health"].base_value = PAWN_HEALTH
-        self.stats["damage"].base_value = PAWN_DAMAGE
-        self.stats["range"].base_value = PAWN_RANGE
+        self.stats["attack_damage"].base_value = PAWN_DAMAGE
+        self.stats["move_range"].base_value = PAWN_RANGE
