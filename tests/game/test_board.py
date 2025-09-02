@@ -14,7 +14,7 @@ class TestBoard(unittest.TestCase):
         board = Board()
         piece = Pawn()
         board.add_entity((0, 0), piece)
-        self.assertEqual(board.get_entity((0, 0)), piece)
+        self.assertEqual(board.get_entity_at((0, 0)), piece)
 
     def test_add_pieces(self):
         board = Board()
@@ -22,8 +22,8 @@ class TestBoard(unittest.TestCase):
         pawn2 = Pawn()
         board.add_entity((0, 0), pawn1)
         board.add_entity((0, 1), pawn2)
-        self.assertEqual(board.get_entity((0, 0)), pawn1)
-        self.assertEqual(board.get_entity((0, 1)), pawn2)
+        self.assertEqual(board.get_entity_at((0, 0)), pawn1)
+        self.assertEqual(board.get_entity_at((0, 1)), pawn2)
 
     def test_remove_piece(self):
         board = Board()
@@ -31,10 +31,10 @@ class TestBoard(unittest.TestCase):
         pawn2 = Pawn()
         board.add_entity((0, 0), pawn1)
         board.add_entity((0, 1), pawn2)
-        board.remove_entity((0, 0))
-        board.remove_entity((0, 1))
-        self.assertEqual(board.get_entity((0, 0)), None)
-        self.assertEqual(board.get_entity((0, 1)), None)
+        board.remove_entity_at((0, 0))
+        board.remove_entity_at((0, 1))
+        self.assertEqual(board.get_entity_at((0, 0)), None)
+        self.assertEqual(board.get_entity_at((0, 1)), None)
 
 
 if __name__ == "__main__":

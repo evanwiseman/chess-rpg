@@ -11,6 +11,12 @@ class MoveType(Enum):
     SPECIAL = "special"
 
 
+class MoveStatus(Enum):
+    COMPLETED = "completed"
+    PENDING = "pending"
+    FAILED = "failed"
+
+
 class Move:
     def __init__(
         self,
@@ -37,3 +43,29 @@ class Move:
 
     def __repr__(self):
         return f"<Move {self.move_type} {self.actor} {self.start}->{self.end}>"
+
+
+class MoveResult:
+    def __init__(
+        self,
+        move: Move,
+        status: MoveStatus,
+        target: Optional[Entity] = None
+    ):
+        self.move = move          # original move object
+        self.status = status    # whether board was mutated
+        self.target = target      # attack or affected entity
+
+    def __eq__(self, other: 'MoveResult'):
+        return (
+            self.move == other.move
+            and self.status == other.status
+            and self.target == other.target
+        )
+
+    def __repr__(self):
+        return (
+            f"MoveResult(move={self.move}, "
+            f"applied={self.status.name}, "
+            f"target={self.target})"
+        )

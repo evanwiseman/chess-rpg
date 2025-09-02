@@ -21,7 +21,6 @@ class TestRules(unittest.TestCase):
         bishop = place(board, player, Bishop, (7, 2))
         valid_moves = Rules.get_valid_moves(
             bishop,
-            (7, 2),
             board,
             player
         )
@@ -53,16 +52,17 @@ class TestRules(unittest.TestCase):
         place(board, player, Pawn, (6, 3))
         place(board, player, Pawn, (6, 1))
 
-        self.assertListEqual(
-            Rules.get_valid_moves(
-                bishop,
-                (7, 2),
-                board,
-                player
-            ),
-            []
+        valid_moves = Rules.get_valid_moves(
+            bishop,
+            board,
+            player
         )
+        self.assertListEqual(valid_moves, [])
 
+    def test_bishop_open(self):
+        board = Board()
+        player = Player(Team.WHITE)
+        
     def test_knight_default(self):
         player = Player(Team.WHITE)
         board = Board()
@@ -70,7 +70,6 @@ class TestRules(unittest.TestCase):
         knight = place(board, player, Knight, (7, 1))
         valid_moves = Rules.get_valid_moves(
             knight,
-            (7, 1),
             board,
             player
         )
@@ -114,7 +113,6 @@ class TestRules(unittest.TestCase):
         self.assertEqual(
             Rules.get_valid_moves(
                 knight,
-                (7, 1),
                 board,
                 player
             ),
@@ -128,7 +126,6 @@ class TestRules(unittest.TestCase):
         queen = place(board, player, Queen, (7, 4))
         valid_moves = Rules.get_valid_moves(
             queen,
-            (7, 4),
             board,
             player
         )
@@ -178,6 +175,25 @@ class TestRules(unittest.TestCase):
             valid_moves
         )
 
+    def test_queen_obstructed(self):
+        board = Board()
+        player = Player(Team.WHITE)
+
+        queen = place(board, player, Queen, (7, 4))
+        place(board, player, King, (7, 3))
+        place(board, player, Pawn, (6, 4))
+        place(board, player, Pawn, (6, 3))
+        place(board, player, Pawn, (6, 5))
+        place(board, player, Bishop, (7, 5))
+        self.assertListEqual(
+            Rules.get_valid_moves(
+                queen,
+                board,
+                player
+            ),
+            []
+        )
+
     def test_rook_default(self):
         board = Board()
         player = Player(Team.WHITE)
@@ -185,7 +201,6 @@ class TestRules(unittest.TestCase):
         rook = place(board, player, Rook, (7, 0))
         valid_moves = Rules.get_valid_moves(
             rook,
-            (7, 0),
             board,
             player
         )
@@ -206,4 +221,21 @@ class TestRules(unittest.TestCase):
                 actor=rook
             ),
             valid_moves
+        )
+
+    def test_rook_obstructed(self):
+        board = Board()
+        player = Player(Team.WHITE)
+
+        rook = place(board, player, Rook, (7, 0))
+
+        place(board, player, Pawn, (6, 0))
+        place(board, player, Knight, (7, 1))
+        self.assertListEqual(
+            Rules.get_valid_moves(
+                rook,
+                board,
+                player
+            ),
+            []
         )

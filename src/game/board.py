@@ -1,9 +1,9 @@
-from typing import List, Optional, Tuple
+from typing import Dict, List, Optional, Tuple
 
 from src.constants import BOARD_ROW_SIZE, BOARD_COL_SIZE
 from src.entities import Entity
 
-from .move import Move, MoveType
+from .move import Move, MoveResult, MoveStatus, MoveType
 
 
 class Board:
@@ -13,6 +13,7 @@ class Board:
         self._board: List[List[Optional[Entity]]] = [
             [None for _ in range(cols)] for _ in range(rows)
         ]
+        self._id_location_map: Dict[int, Tuple[int, int]] = {}
 
     def __repr__(self):
         lines = []
@@ -30,16 +31,83 @@ class Board:
     def add_entity(self, location: Tuple[int, int], entity: Entity):
         row, col = location
         if self._board[row][col] is not None:
-            raise ValueError(f"Cell ({row},{col}) already occupied")
+            raise ValueError(
+                "Error: (Board.add_entity)"
+                f"location ({row},{col}) already occupied"
+            )
+        if entity.id in self._id_location_map:
+            raise KeyError(
+                "Error: (Board.add_entity)"
+                f"entity {entity} already placed."
+            )
         self._board[row][col] = entity
+        self._id_location_map[entity.id] = (row, col)
 
-    def remove_entity(self, location: Tuple[int, int]):
+    def remove_entity_at(self, location: Tuple[int, int]) -> Entity:
         row, col = location
+        entity = self._board[row][col]
+        if not entity:
+            raise ValueError(
+                "Error: (Board.remove_entity_at)"
+                f"no entity found at {location}."
+            )
         self._board[row][col] = None
+        if entity.id not in self._id_location_map:
+            raise KeyError(
+                "Error: (Board.remove_entity_at)"
+                f"couldn't resolve entity id {entity.id}."
+            )
+        del self._id_location_map[entity.id]
+        return entity
 
-    def get_entity(self, location: Tuple[int, int]) -> Optional[Entity]:
+    def remove_entity(self, id: int) -> Entity:
+        if id not in self._id_location_map:
+            raise KeyError(f"Error: (Board.remove_entity) Invalid id {id}.")
+        row, col = self._id_location_map[id]
+        del self._id_location_map[id]
+
+        entity = self._board[row][col]
+        if not entity:
+            raise ValueError(
+                "Error: (Board.remove_entity)"
+                f"no entity found at {(row, col)}"
+            )
+        self._board[row][col] = None
+        return entity
+
+    def get_entity_at(self, location: Tuple[int, int]) -> Optional[Entity]:
         row, col = location
         return self._board[row][col]
+
+    def get_entity(self, id: int) -> Entity:
+        if id not in self._id_location_map:
+            raise KeyError(
+                "Error: (Board.get_entity)",
+                f"couldn't resolve entity id {id}"
+            )
+        row, col = self._id_location_map[id]
+        entity = self._board[row][col]
+        if not entity:
+            raise ValueError(
+                "Error: (Board.get_entity)",
+                f"no entity found at {(row, col)}"
+            )
+        return entity
+
+    def get_entity_location(self, entity: Entity) -> Tuple[int, int]:
+        if not Entity:
+            raise ValueError(
+                "Error: (Board.get_entity_location)",
+                "couldn't resolve entity."
+            )
+
+        id = entity.id
+        if id not in self._id_location_map:
+            raise KeyError(
+                "Error: (Board.get_entity_location)",
+                f"couldn't resolve entity id {id}"
+            )
+        return self._id_location_map[id]
 
     def is_in_bounds(self, location: Tuple[int, int]) -> bool:
         row, col = location
@@ -54,19 +122,25 @@ class Board:
         end = move.end
 
         if move.move_type == MoveType.MOVE:
-            if self.get_entity(end) is not None:
+            if self.get_entity_at(end) is not None:
                 raise ValueError(f"Target cell {end} is not empty")
+            # Update board
             self._board[end[0]][end[1]] = actor
             self._board[start[0]][start[1]] = None
+            # Update id map
+            self._id_location_map[actor.id] = end
+
+            return MoveResult(move, status=MoveStatus.COMPLETED, target=None)
 
         elif move.move_type == MoveType.ATTACK:
             if move.target is None:
                 raise ValueError("Attack move requires a target")
-            target = self.get_entity(end)
+            target = self.get_entity_at(end)
             if target != move.target:
                 raise ValueError(f"Attack target mismatch at {end}")
-            # Board doesn’t resolve damage, just confirms attack is valid.
-            return {"attacker": actor, "target": target, "location": end}
+
+            # Board doesn’t resolve damage, just validates.
+            return MoveResult(move, status=MoveStatus.PENDING, target=target)
 
         elif move.move_type == MoveType.CASTLE:
             # Move king + rook here
