@@ -1,6 +1,9 @@
 import unittest
 
-from src.game import Board, Move, MoveType, Rules, Team, Player
+from src.actions import (
+    Attack, AttackAction, Spell, SpellAction, Action, Move, MoveType
+)
+from src.game import Board, Rules, Team, Player
 from src.entities.pieces import (
     Bishop, King, Knight, Pawn, Queen, Rook
 )
@@ -273,6 +276,28 @@ class TestRulesMoves(unittest.TestCase):
             Move((4, 4), (7, 4), MoveType.MOVE, rook),
             valid_moves
         )
+
+
+class TestRulesActions(unittest.TestCase):
+    def test_bishop(self):
+        board = Board()
+        player = Player(Team.WHITE)
+
+        bishop: Bishop = place(board, player, Bishop, (4, 4))
+        place(board, player, Pawn, (3, 3))
+        bishop.attack_book.add_attack(
+            Attack(
+                name="Slash",
+                description="",
+                damage=10,
+                stamina_cost=5,
+                attack_range=1,
+                cooldown=1,
+            )
+        )
+
+        valid_actions = Rules.get_valid_actions(bishop, board)
+        print(valid_actions)
 
 
 if __name__ == "__main__":

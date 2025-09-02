@@ -1,5 +1,5 @@
 from src.constants import (
-    QUEEN_DAMAGE, QUEEN_HEALTH, QUEEN_NAME, QUEEN_RANGE, QUEEN_VALUE,
+    QUEEN_HEALTH, QUEEN_NAME, QUEEN_RANGE, QUEEN_VALUE,
 )
 
 from .piece import Piece
@@ -20,5 +20,4 @@ class Queen(Piece):
         ]
         self.stats["value"].base_value = QUEEN_VALUE
         self.stats["max_health"].base_value = QUEEN_HEALTH
-        self.stats["attack_damage"].base_value = QUEEN_DAMAGE
         self.stats["move_range"].base_value = QUEEN_RANGE

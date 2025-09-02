@@ -25,7 +25,6 @@ class Piece(Entity):
 
         self.spell_book = SpellBook()
         self.attack_book = AttackBook()
-
         self._equipment_manager = EquipmentManager()
 
     def __eq__(self, other: 'Piece'):

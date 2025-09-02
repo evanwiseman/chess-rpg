@@ -1,9 +1,8 @@
 from typing import Dict, List, Optional, Tuple
 
+from src.actions import Move, MoveResult, MoveStatus, MoveType
 from src.constants import BOARD_ROW_SIZE, BOARD_COL_SIZE
 from src.entities import Entity
-
-from .move import Move, MoveResult, MoveStatus, MoveType
 
 
 class Board:
