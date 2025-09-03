@@ -46,22 +46,5 @@ class SpellAction(Action):
         spell: Spell,
         target: Optional[Entity] = None
     ):
-        super().__init__(actor, target)
-        self.spell = spell
-
-    def __eq__(self, other: 'SpellAction'):
-        return (
-            self.actor == other.actor
-            and self.spell == other.spell
-            and self.target == other.target
-        )
-
-    def __repr__(self):
-        return (
-            f"<{self.__class__.__name__}("
-            f"actor={self.actor}, attack={self.spell}, target={self.target})>"
-        )
-
-    @property
-    def type(self):
-        return ActionType.SPELL
+        super().__init__(actor, spell, target)
+        self._type = ActionType.SPELL

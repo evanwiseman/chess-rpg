@@ -1,482 +1,162 @@
 import unittest
+from typing import Type, Tuple
 
 from src.actions import (
     Attack, AttackAction, Spell, SpellAction, Move, MoveType
 )
-from src.game import Board, RulesEngine, Team, Player
+from src.board import Board
+from src.game import RulesEngine, Team, Player
 from src.entities.pieces import (
-    Bishop, King, Knight, Pawn, Queen, Rook, Piece
+    Piece, Pawn, Bishop, Knight, Rook, Queen, King
 )
 
 
-def place(
-    board: Board,
-    player: Player,
-    piece_cls: type,
-    pos: tuple[int, int]
-) -> Piece:
-    piece = piece_cls()
-    player.add_piece(piece)
-    board.add_entity(pos, piece)
-    return piece
+class RulesTestCase(unittest.TestCase):
+    def setUp(self):
+        self.board = Board()
+        self.white = Player("white", Team.WHITE)
+        self.black = Player("black", Team.BLACK)
 
+    def place_piece(
+        self,
+        piece_cls: Type[Piece],
+        player: Player,
+        pos: Tuple[int, int]
+    ) -> Piece:
+        """Helper to create, add to player, and place on board."""
+        piece = piece_cls()
+        player.add_piece(piece)
+        self.board.place_piece(pos, piece)
+        return piece
 
-class TestRulesMoves(unittest.TestCase):
-    def test_bishop_default(self):
-        player = Player("player", Team.WHITE)
-        board = Board()
-
-        bishop = place(board, player, Bishop, (7, 2))
-        valid_moves = RulesEngine.get_valid_moves(bishop, board)
-
-        self.assertIn(
-            Move((7, 2), (2, 7), MoveType.MOVE, bishop),
-            valid_moves
+    def add_attack(
+        self,
+        piece: Piece,
+        name="Slash",
+        damage=10,
+        cost=5,
+        rng=1,
+        cd=1
+    ) -> Attack:
+        attack = Attack(
+            name=name,
+            description="",
+            damage=damage,
+            stamina_cost=cost,
+            attack_range=rng,
+            cooldown=cd,
         )
-        self.assertIn(
-            Move((7, 2), (5, 0), MoveType.MOVE, bishop),
-            valid_moves
+        piece.attack_book.add_attack(attack)
+        return attack
+
+    def add_spell(
+        self,
+        piece: Piece,
+        name="Magic Missile",
+        dmg=30,
+        mana=10,
+        rng=3,
+        cd=3
+    ) -> Spell:
+        spell = Spell(
+            name=name,
+            description="",
+            damage=dmg,
+            mana_cost=mana,
+            cast_range=rng,
+            cooldown=cd,
         )
+        piece.spell_book.add_spell(spell)
+        return spell
+
+
+class TestRulesMoves(RulesTestCase):
+    def test_bishop_moves(self):
+        bishop = self.place_piece(Bishop, self.white, (4, 4))
+        moves = RulesEngine.get_valid_moves(bishop, self.board)
+        # Test corners reachable
+        expected = [(0, 0), (7, 7), (1, 7), (7, 1)]
+        for pos in expected:
+            self.assertIn(Move((4, 4), pos, MoveType.MOVE, bishop), moves)
 
     def test_bishop_obstructed(self):
-        player = Player("player", Team.WHITE)
-        board = Board()
+        bishop = self.place_piece(Bishop, self.white, (7, 2))
+        self.place_piece(Pawn, self.white, (6, 3))
+        self.place_piece(Pawn, self.white, (6, 1))
+        moves = RulesEngine.get_valid_moves(bishop, self.board)
+        self.assertEqual(moves, [])
 
-        bishop = place(board, player, Bishop, (7, 2))
-        place(board, player, Pawn, (6, 3))
-        place(board, player, Pawn, (6, 1))
-        valid_moves = RulesEngine.get_valid_moves(bishop, board)
+    def test_knight_moves(self):
+        knight = self.place_piece(Knight, self.white, (4, 4))
+        moves = RulesEngine.get_valid_moves(knight, self.board)
+        expected = [
+            (2, 3), (3, 2), (5, 6), (6, 5), (6, 3), (5, 2), (2, 5), (3, 6)
+        ]
+        for pos in expected:
+            self.assertIn(Move((4, 4), pos, MoveType.MOVE, knight), moves)
 
-        self.assertListEqual(valid_moves, [])
+    def test_pawn_moves_first_and_second(self):
+        pawn = self.place_piece(Pawn, self.white, (6, 4))
+        moves_first = RulesEngine.get_valid_moves(pawn, self.board)
+        self.assertIn(Move((6, 4), (5, 4), MoveType.MOVE, pawn), moves_first)
+        self.assertIn(Move((6, 4), (4, 4), MoveType.MOVE, pawn), moves_first)
 
-    def test_bishop_open(self):
-        board = Board()
-        player = Player("player", Team.WHITE)
-
-        bishop = place(board, player, Bishop, (4, 4))
-        valid_moves = RulesEngine.get_valid_moves(bishop, board)
-
-        self.assertIn(
-            Move((4, 4), (0, 0), MoveType.MOVE, bishop),
-            valid_moves
-        )
-
-        self.assertIn(
-            Move((4, 4), (7, 7), MoveType.MOVE, bishop),
-            valid_moves
-        )
-        self.assertIn(
-            Move((4, 4), (1, 7), MoveType.MOVE, bishop),
-            valid_moves
-        )
-        self.assertIn(
-            Move((4, 4), (7, 1), MoveType.MOVE, bishop),
-            valid_moves
-        )
-
-    def test_knight_default(self):
-        player = Player("player", Team.WHITE)
-        board = Board()
-
-        knight = place(board, player, Knight, (7, 1))
-        valid_moves = RulesEngine.get_valid_moves(knight, board)
-
-        self.assertIn(
-            Move((7, 1), (6, 3), MoveType.MOVE, knight),
-            valid_moves
-        )
-        self.assertIn(
-            Move((7, 1), (5, 2), MoveType.MOVE, knight),
-            valid_moves
-        )
-        self.assertIn(
-            Move((7, 1), (5, 0), MoveType.MOVE, knight),
-            valid_moves
-        )
-
-    def test_knight_obstructed(self):
-        player = Player("player", Team.WHITE)
-        board = Board()
-
-        knight = place(board, player, Knight, (7, 1))
-        place(board, player, Pawn, (6, 3))
-        place(board, player, Pawn, (5, 2))
-        place(board, player, Pawn, (5, 0))
-        valid_moves = RulesEngine.get_valid_moves(knight, board)
-
-        self.assertEqual(valid_moves, [])
-
-    def test_knight_open(self):
-        board = Board()
-        player = Player("player", Team.WHITE)
-
-        knight = place(board, player, Knight, (4, 4))
-        valid_moves = RulesEngine.get_valid_moves(knight, board)
-
-        self.assertIn(
-            Move((4, 4), (2, 3), MoveType.MOVE, knight),
-            valid_moves
-        )
-        self.assertIn(
-            Move((4, 4), (3, 2), MoveType.MOVE, knight),
-            valid_moves
-        )
-        self.assertIn(
-            Move((4, 4), (5, 6), MoveType.MOVE, knight),
-            valid_moves
-        )
-        self.assertIn(
-            Move((4, 4), (6, 5), MoveType.MOVE, knight),
-            valid_moves
-        )
-        self.assertIn(
-            Move((4, 4), (6, 3), MoveType.MOVE, knight),
-            valid_moves
-        )
-        self.assertIn(
-            Move((4, 4), (5, 2), MoveType.MOVE, knight),
-            valid_moves
-        )
-        self.assertIn(
-            Move((4, 4), (2, 5), MoveType.MOVE, knight),
-            valid_moves
-        )
-        self.assertIn(
-            Move((4, 4), (3, 6), MoveType.MOVE, knight),
-            valid_moves
-        )
-
-    def test_pawn_default_first_move(self):
-        player = Player("player", Team.WHITE)
-        board = Board()
-
-        pawn = place(board, player, Pawn, (6, 4))
-        valid_moves = RulesEngine.get_valid_moves(pawn, board)
-
-        self.assertIn(
-            Move((6, 4), (5, 4), MoveType.MOVE, pawn),
-            valid_moves
-        )
-        self.assertIn(
-            Move((6, 4), (4, 4), MoveType.MOVE, pawn),
-            valid_moves
-        )
-
-    def test_pawn_default_second_move(self):
-        player = Player("player", Team.WHITE)
-        board = Board()
-
-        pawn = place(board, player, Pawn, (5, 4))
-        pawn.set_moved(True)
-        valid_moves = RulesEngine.get_valid_moves(pawn, board)
-
-        self.assertIn(
-            Move((5, 4), (4, 4), MoveType.MOVE, pawn),
-            valid_moves
-        )
+        pawn2 = self.place_piece(Pawn, self.white, (5, 4))
+        pawn2.set_moved(True)
+        moves_second = RulesEngine.get_valid_moves(pawn2, self.board)
+        self.assertIn(Move((5, 4), (4, 4), MoveType.MOVE, pawn2), moves_second)
         self.assertNotIn(
-            Move((5, 4), (3, 4), MoveType.MOVE, pawn),
-            valid_moves
+            Move((5, 4), (3, 4), MoveType.MOVE, pawn2),
+            moves_second
         )
 
-    def test_queen_default(self):
-        board = Board()
-        player = Player("player", Team.WHITE)
+    def test_rook_moves(self):
+        rook = self.place_piece(Rook, self.white, (4, 4))
+        moves = RulesEngine.get_valid_moves(rook, self.board)
+        self.assertIn(Move((4, 4), (4, 0), MoveType.MOVE, rook), moves)
+        self.assertIn(Move((4, 4), (0, 4), MoveType.MOVE, rook), moves)
 
-        queen = place(board, player, Queen, (7, 4))
-        valid_moves = RulesEngine.get_valid_moves(queen, board)
+    def test_queen_moves(self):
+        queen = self.place_piece(Queen, self.white, (4, 4))
+        moves = RulesEngine.get_valid_moves(queen, self.board)
+        self.assertIn(Move((4, 4), (4, 0), MoveType.MOVE, queen), moves)
+        self.assertIn(Move((4, 4), (0, 4), MoveType.MOVE, queen), moves)
 
+
+class TestRulesActions(RulesTestCase):
+    def test_attack_and_spell_single_target(self):
+        bishop = self.place_piece(Bishop, self.white, (4, 4))
+        pawn = self.place_piece(Pawn, self.black, (3, 3))
+        attack = self.add_attack(bishop, rng=1)
+        spell = self.add_spell(bishop, rng=3)
+
+        actions = RulesEngine.get_valid_actions(bishop, self.board)
+        self.assertIn(AttackAction(bishop, attack, pawn), actions)
+        self.assertIn(SpellAction(bishop, spell, pawn), actions)
+
+    def test_attack_multi_target(self):
+        bishop = self.place_piece(Bishop, self.white, (4, 4))
+        pawn1 = self.place_piece(Pawn, self.black, (3, 3))
+        pawn2 = self.place_piece(Pawn, self.black, (6, 6))
+        attack1 = self.add_attack(bishop, rng=1)
+        attack2 = self.add_attack(bishop, name="Swipe", rng=2)
+
+        actions = RulesEngine.get_valid_actions(bishop, self.board)
+        self.assertIn(AttackAction(bishop, attack1, pawn1), actions)
+        self.assertNotIn(AttackAction(bishop, attack1, pawn2), actions)
         self.assertIn(
-            Move((7, 4), (0, 4), MoveType.MOVE, queen),
-            valid_moves
-        )
-        self.assertIn(
-            Move((7, 4), (7, 7), MoveType.MOVE, queen),
-            valid_moves
-        )
-        self.assertIn(
-            Move((7, 4), (7, 0), MoveType.MOVE, queen),
-            valid_moves
-        )
-        self.assertIn(
-            Move((7, 4), (3, 0), MoveType.MOVE, queen),
-            valid_moves
-        )
-        self.assertIn(
-            Move((7, 4), (4, 7), MoveType.MOVE, queen),
-            valid_moves
+            AttackAction(bishop, attack2, pawn2), actions
         )
 
-    def test_queen_obstructed(self):
-        board = Board()
-        player = Player("player", Team.WHITE)
+    def test_spell_multi_target(self):
+        bishop = self.place_piece(Bishop, self.white, (4, 4))
+        pawn1 = self.place_piece(Pawn, self.black, (3, 3))
+        pawn2 = self.place_piece(Pawn, self.black, (5, 5))
+        spell = self.add_spell(bishop, rng=3)
 
-        queen = place(board, player, Queen, (7, 4))
-        place(board, player, King, (7, 3))
-        place(board, player, Pawn, (6, 4))
-        place(board, player, Pawn, (6, 3))
-        place(board, player, Pawn, (6, 5))
-        place(board, player, Bishop, (7, 5))
-        valid_moves = RulesEngine.get_valid_moves(queen, board)
-
-        self.assertListEqual(valid_moves, [])
-
-    def test_queen_open(self):
-        board = Board()
-        player = Player("player", Team.WHITE)
-
-        queen = place(board, player, Queen, (4, 4))
-        valid_moves = RulesEngine.get_valid_moves(queen, board)
-
-        self.assertIn(
-            Move((4, 4), (0, 0), MoveType.MOVE, queen),
-            valid_moves
-        )
-
-        self.assertIn(
-            Move((4, 4), (7, 7), MoveType.MOVE, queen),
-            valid_moves
-        )
-        self.assertIn(
-            Move((4, 4), (1, 7), MoveType.MOVE, queen),
-            valid_moves
-        )
-        self.assertIn(
-            Move((4, 4), (7, 1), MoveType.MOVE, queen),
-            valid_moves
-        )
-        self.assertIn(
-            Move((4, 4), (4, 0), MoveType.MOVE, queen),
-            valid_moves
-        )
-
-        self.assertIn(
-            Move((4, 4), (0, 4), MoveType.MOVE, queen),
-            valid_moves
-        )
-        self.assertIn(
-            Move((4, 4), (4, 7), MoveType.MOVE, queen),
-            valid_moves
-        )
-        self.assertIn(
-            Move((4, 4), (7, 4), MoveType.MOVE, queen),
-            valid_moves
-        )
-
-    def test_rook_default(self):
-        board = Board()
-        player = Player("player", Team.WHITE)
-
-        rook = place(board, player, Rook, (7, 0))
-        valid_moves = RulesEngine.get_valid_moves(rook, board)
-
-        self.assertIn(
-            Move((7, 0), (0, 0), MoveType.MOVE, rook),
-            valid_moves
-        )
-        self.assertIn(
-            Move((7, 0), (7, 7), MoveType.MOVE, rook),
-            valid_moves
-        )
-
-    def test_rook_obstructed(self):
-        board = Board()
-        player = Player("player", Team.WHITE)
-
-        rook = place(board, player, Rook, (7, 0))
-        place(board, player, Pawn, (6, 0))
-        place(board, player, Knight, (7, 1))
-        valid_moves = RulesEngine.get_valid_moves(rook, board)
-
-        self.assertListEqual(valid_moves, [])
-
-    def test_rook_open(self):
-        board = Board()
-        player = Player("player", Team.WHITE)
-
-        rook = place(board, player, Rook, (4, 4))
-        valid_moves = RulesEngine.get_valid_moves(rook, board)
-
-        self.assertIn(
-            Move((4, 4), (4, 0), MoveType.MOVE, rook),
-            valid_moves
-        )
-
-        self.assertIn(
-            Move((4, 4), (0, 4), MoveType.MOVE, rook),
-            valid_moves
-        )
-        self.assertIn(
-            Move((4, 4), (4, 7), MoveType.MOVE, rook),
-            valid_moves
-        )
-        self.assertIn(
-            Move((4, 4), (7, 4), MoveType.MOVE, rook),
-            valid_moves
-        )
-
-
-class TestRulesActions(unittest.TestCase):
-    def test_bishop_attack_one(self):
-        board = Board()
-        white = Player("white", Team.WHITE)
-        black = Player("black", Team.BLACK)
-
-        bishop: Bishop = place(board, white, Bishop, (4, 4))
-        pawn: Pawn = place(board, black, Pawn, (3, 3))
-        slash = Attack(
-            name="Slash",
-            description="",
-            damage=10,
-            stamina_cost=5,
-            attack_range=1,
-            cooldown=1,
-        )
-        bishop.attack_book.add_attack(
-            slash
-        )
-
-        valid_actions = RulesEngine.get_valid_actions(bishop, board)
-        self.assertIn(
-            AttackAction(bishop, slash, pawn),
-            valid_actions
-        )
-
-    def test_bishop_attack_multi(self):
-        board = Board()
-        white = Player("white", Team.WHITE)
-        black = Player("black", Team.BLACK)
-
-        bishop: Bishop = place(board, white, Bishop, (4, 4))
-        pawn1: Pawn = place(board, black, Pawn, (3, 3))
-        pawn2: Pawn = place(board, black, Pawn, (6, 6))
-        slash = Attack(
-            name="Slash",
-            description="",
-            damage=10,
-            stamina_cost=5,
-            attack_range=1,
-            cooldown=1,
-        )
-        swipe = Attack(
-            name="Swipe",
-            description="",
-            damage=10,
-            stamina_cost=5,
-            attack_range=2,
-            cooldown=1,
-        )
-        bishop.attack_book.add_attack(slash)
-        bishop.attack_book.add_attack(swipe)
-
-        valid_actions = RulesEngine.get_valid_actions(bishop, board)
-
-        self.assertIn(
-            AttackAction(bishop, slash, pawn1),
-            valid_actions
-        )
-        self.assertNotIn(
-            AttackAction(bishop, slash, pawn2),
-            valid_actions
-        )
-
-    def test_bishop_attack_multi_blocked(self):
-        board = Board()
-        white = Player("white", Team.WHITE)
-        black = Player("black", Team.BLACK)
-
-        bishop: Bishop = place(board, white, Bishop, (4, 4))
-        pawn_blocked: Pawn = place(board, black, Pawn, (2, 2))
-        pawn1: Pawn = place(board, black, Pawn, (3, 3))
-        pawn2: Pawn = place(board, black, Pawn, (6, 6))
-        slash = Attack(
-            name="Slash",
-            description="",
-            damage=10,
-            stamina_cost=5,
-            attack_range=1,
-            cooldown=1,
-        )
-        swipe = Attack(
-            name="Swipe",
-            description="",
-            damage=10,
-            stamina_cost=5,
-            attack_range=2,
-            cooldown=1,
-        )
-        bishop.attack_book.add_attack(slash)
-        bishop.attack_book.add_attack(swipe)
-
-        valid_actions = RulesEngine.get_valid_actions(bishop, board)
-
-        self.assertIn(
-            AttackAction(bishop, slash, pawn1),
-            valid_actions
-        )
-        self.assertNotIn(
-            AttackAction(bishop, slash, pawn2),
-            valid_actions
-        )
-        self.assertNotIn(
-            AttackAction(bishop, swipe, pawn_blocked),
-            valid_actions
-        )
-
-    def test_bishop_spell_one(self):
-        board = Board()
-        white = Player("white", Team.WHITE)
-        black = Player("black", Team.BLACK)
-
-        bishop: Bishop = place(board, white, Bishop, (4, 4))
-        pawn: Pawn = place(board, black, Pawn, (3, 3))
-
-        magic_missile = Spell(
-            name="Magic Missile",
-            description="",
-            damage=30,
-            mana_cost=10,
-            cast_range=3,
-            cooldown=3
-        )
-        bishop.spell_book.add_spell(magic_missile)
-
-        valid_actions = RulesEngine.get_valid_actions(bishop, board)
-
-        self.assertIn(
-            SpellAction(bishop, magic_missile, pawn),
-            valid_actions
-        )
-
-    def test_bishop_spell_multi(self):
-        board = Board()
-        white = Player("white", Team.WHITE)
-        black = Player("black", Team.BLACK)
-
-        bishop: Bishop = place(board, white, Bishop, (4, 4))
-        pawn1: Pawn = place(board, black, Pawn, (3, 3))
-        pawn2: Pawn = place(board, black, Pawn, (5, 5))
-
-        magic_missile = Spell(
-            name="Magic Missile",
-            description="",
-            damage=30,
-            mana_cost=10,
-            cast_range=3,
-            cooldown=3
-        )
-        bishop.spell_book.add_spell(magic_missile)
-
-        valid_actions = RulesEngine.get_valid_actions(bishop, board)
-
-        self.assertIn(
-            SpellAction(bishop, magic_missile, pawn1),
-            valid_actions
-        )
-        self.assertIn(
-            SpellAction(bishop, magic_missile, pawn2),
-            valid_actions
-        )
+        actions = RulesEngine.get_valid_actions(bishop, self.board)
+        self.assertIn(SpellAction(bishop, spell, pawn1), actions)
+        self.assertIn(SpellAction(bishop, spell, pawn2), actions)
 
 
 if __name__ == "__main__":

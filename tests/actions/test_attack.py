@@ -64,7 +64,7 @@ class TestAttackAction(unittest.TestCase):
 
         self.assertIsInstance(attack_action, AttackAction)
         self.assertEqual(attack_action.actor, actor)
-        self.assertEqual(attack_action.attack, attack)
+        self.assertEqual(attack_action.payload, attack)
         self.assertEqual(attack_action.target, target)
 
     def test_eq(self):

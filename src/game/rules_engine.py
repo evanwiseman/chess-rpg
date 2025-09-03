@@ -2,7 +2,7 @@ from typing import List, Tuple, Optional
 from src.actions import Action, AttackAction, SpellAction, Move, MoveType
 from src.entities import Entity
 from src.entities.pieces import Piece
-from .board import Board
+from src.board import Board
 
 
 class RulesEngine:
@@ -24,7 +24,7 @@ class RulesEngine:
         def _process_candidate(candidate: Tuple[int, int]):
             if not board.is_in_bounds(candidate):
                 return True  # stop ray
-            target = board.get_entity_at(candidate)
+            target = board.get_piece_at(candidate)
             if not target:
                 moves.append(
                     Move(
@@ -62,7 +62,7 @@ class RulesEngine:
                     candidate = (row, col)
                     if not board.is_in_bounds(candidate):
                         break
-                    target_entity = board.get_entity_at(candidate)
+                    target_entity = board.get_piece_at(candidate)
                     # Stop ray if a piece is encountered
                     targets.append(candidate)
                     if target_entity is not None:
@@ -72,7 +72,7 @@ class RulesEngine:
         # Attack actions
         for attack in piece.attack_book.all_attacks():
             for target_pos in _raycast_targets(attack.attack_range):
-                target_entity = board.get_entity_at(target_pos)
+                target_entity = board.get_piece_at(target_pos)
                 if not RulesEngine._validate_target(piece, target_entity):
                     continue
                 actions.append(
@@ -86,7 +86,7 @@ class RulesEngine:
         # Spell actions
         for spell in piece.spell_book.all_spells():
             for target_pos in _raycast_targets(spell.cast_range):
-                target_entity = board.get_entity_at(target_pos)
+                target_entity = board.get_piece_at(target_pos)
                 if not RulesEngine._validate_target(piece, target_entity):
                     continue
                 actions.append(
