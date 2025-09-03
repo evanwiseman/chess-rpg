@@ -1,5 +1,6 @@
-from typing import Tuple, List
-
+from typing import Optional, TYPE_CHECKING
+if TYPE_CHECKING:
+    from src.game import Player
 from src.actions import AttackBook, SpellBook
 from src.entities import Entity
 from src.stats import Resource, Stat, Stats
@@ -7,9 +8,9 @@ from src.systems import EquipmentManager
 
 
 class Piece(Entity):
-    def __init__(self, name: str):
-        super().__init__(name)
-        self.directions: List[Tuple[int, int]] = []
+    def __init__(self, name: str, owner: Optional['Player'] = None):
+        super().__init__(name, owner)
+        self._moved = False
 
         self.stats = Stats()
         self.stats["value"] = Stat("Value", 0)
@@ -27,14 +28,21 @@ class Piece(Entity):
         self.attack_book = AttackBook()
         self._equipment_manager = EquipmentManager()
 
+    # Movement methods
+    def get_move_directions(self):
+        raise NotImplementedError
+
+    def get_action_directions(self):
+        raise NotImplementedError
+
     def get_move_range(self):
         return self.stats["move_range"].value
 
-    def get_attack_range(self):
-        return self.stats["attack_range"].value
+    def get_moved(self) -> bool:
+        return self._moved
 
-    def get_interact_range(self):
-        return self.stats["interact_range"].value
+    def set_moved(self, state: bool):
+        self._moved = state
 
     # Resource Methods
     def take_damage(self, amount: int):

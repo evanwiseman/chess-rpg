@@ -1,7 +1,7 @@
 import unittest
 
 
-class TestPiece(unittest.TestCase):
+class TestResource(unittest.TestCase):
     pass
 
 

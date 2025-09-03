@@ -1,10 +1,17 @@
-from typing import List, Tuple
+from typing import List, Tuple, Optional
 from src.actions import Action, AttackAction, SpellAction, Move, MoveType
+from src.entities import Entity
 from src.entities.pieces import Piece
 from .board import Board
 
 
 class RulesEngine:
+    @staticmethod
+    def _validate_target(actor: Entity, target: Optional[Entity]):
+        return (
+            target and target != actor
+        )
+
     @staticmethod
     def get_valid_moves(
         piece: Piece,
@@ -29,7 +36,7 @@ class RulesEngine:
                 return False  # continue ray
             return True  # stop ray after hitting any piece
 
-        for direction in piece.directions:
+        for direction in piece.get_move_directions():
             for step in range(1, piece.get_move_range() + 1):
                 row = location[0] + step * direction[0]
                 col = location[1] + step * direction[1]
@@ -48,7 +55,7 @@ class RulesEngine:
             Return all reachable locations in range or until entity reached.
             """
             targets = []
-            for direction in piece.directions:
+            for direction in piece.get_action_directions():
                 for step in range(1, max_range + 1):
                     row = location[0] + step * direction[0]
                     col = location[1] + step * direction[1]
@@ -66,7 +73,7 @@ class RulesEngine:
         for attack in piece.attack_book.all_attacks():
             for target_pos in _raycast_targets(attack.attack_range):
                 target_entity = board.get_entity_at(target_pos)
-                if target_entity is None or target_entity == piece:
+                if not RulesEngine._validate_target(piece, target_entity):
                     continue
                 actions.append(
                     AttackAction(
@@ -80,7 +87,7 @@ class RulesEngine:
         for spell in piece.spell_book.all_spells():
             for target_pos in _raycast_targets(spell.cast_range):
                 target_entity = board.get_entity_at(target_pos)
-                if target_entity is None or target_entity == piece:
+                if not RulesEngine._validate_target(piece, target_entity):
                     continue
                 actions.append(
                     SpellAction(

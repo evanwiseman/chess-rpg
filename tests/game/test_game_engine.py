@@ -1,7 +1,7 @@
 import unittest
 
 
-class TestPiece(unittest.TestCase):
+class TestGameEngine(unittest.TestCase):
     pass
 
 

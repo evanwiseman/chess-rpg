@@ -1,6 +1,6 @@
 from typing import Dict, List, Optional, Tuple
 
-from src.actions import Move, MoveResult, MoveStatus, MoveType
+from src.actions import Move, MoveType
 from src.constants import BOARD_ROW_SIZE, BOARD_COL_SIZE
 from src.entities import Entity
 
@@ -122,11 +122,7 @@ class Board:
             self._board[start[0]][start[1]] = None
             # Update id map
             self._id_location_map[actor.id] = end
-
-            return MoveResult(move, status=MoveStatus.COMPLETED, target=None)
         elif move.move_type == MoveType.SPECIAL:
-            # Defer to higher-level game systems
-            return {"special": True, "actor": actor, "target": move.target}
-
+            raise NotImplementedError
         else:
             raise ValueError(f"Unknown move type {move.move_type}")

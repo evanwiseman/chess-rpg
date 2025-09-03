@@ -23,7 +23,7 @@ def place(
 
 class TestRulesMoves(unittest.TestCase):
     def test_bishop_default(self):
-        player = Player(Team.WHITE)
+        player = Player("player", Team.WHITE)
         board = Board()
 
         bishop = place(board, player, Bishop, (7, 2))
@@ -39,7 +39,7 @@ class TestRulesMoves(unittest.TestCase):
         )
 
     def test_bishop_obstructed(self):
-        player = Player(Team.WHITE)
+        player = Player("player", Team.WHITE)
         board = Board()
 
         bishop = place(board, player, Bishop, (7, 2))
@@ -51,7 +51,7 @@ class TestRulesMoves(unittest.TestCase):
 
     def test_bishop_open(self):
         board = Board()
-        player = Player(Team.WHITE)
+        player = Player("player", Team.WHITE)
 
         bishop = place(board, player, Bishop, (4, 4))
         valid_moves = RulesEngine.get_valid_moves(bishop, board)
@@ -75,7 +75,7 @@ class TestRulesMoves(unittest.TestCase):
         )
 
     def test_knight_default(self):
-        player = Player(Team.WHITE)
+        player = Player("player", Team.WHITE)
         board = Board()
 
         knight = place(board, player, Knight, (7, 1))
@@ -95,7 +95,7 @@ class TestRulesMoves(unittest.TestCase):
         )
 
     def test_knight_obstructed(self):
-        player = Player(Team.WHITE)
+        player = Player("player", Team.WHITE)
         board = Board()
 
         knight = place(board, player, Knight, (7, 1))
@@ -108,7 +108,7 @@ class TestRulesMoves(unittest.TestCase):
 
     def test_knight_open(self):
         board = Board()
-        player = Player(Team.WHITE)
+        player = Player("player", Team.WHITE)
 
         knight = place(board, player, Knight, (4, 4))
         valid_moves = RulesEngine.get_valid_moves(knight, board)
@@ -146,9 +146,42 @@ class TestRulesMoves(unittest.TestCase):
             valid_moves
         )
 
+    def test_pawn_default_first_move(self):
+        player = Player("player", Team.WHITE)
+        board = Board()
+
+        pawn = place(board, player, Pawn, (6, 4))
+        valid_moves = RulesEngine.get_valid_moves(pawn, board)
+
+        self.assertIn(
+            Move((6, 4), (5, 4), MoveType.MOVE, pawn),
+            valid_moves
+        )
+        self.assertIn(
+            Move((6, 4), (4, 4), MoveType.MOVE, pawn),
+            valid_moves
+        )
+
+    def test_pawn_default_second_move(self):
+        player = Player("player", Team.WHITE)
+        board = Board()
+
+        pawn = place(board, player, Pawn, (5, 4))
+        pawn.set_moved(True)
+        valid_moves = RulesEngine.get_valid_moves(pawn, board)
+
+        self.assertIn(
+            Move((5, 4), (4, 4), MoveType.MOVE, pawn),
+            valid_moves
+        )
+        self.assertNotIn(
+            Move((5, 4), (3, 4), MoveType.MOVE, pawn),
+            valid_moves
+        )
+
     def test_queen_default(self):
         board = Board()
-        player = Player(Team.WHITE)
+        player = Player("player", Team.WHITE)
 
         queen = place(board, player, Queen, (7, 4))
         valid_moves = RulesEngine.get_valid_moves(queen, board)
@@ -176,7 +209,7 @@ class TestRulesMoves(unittest.TestCase):
 
     def test_queen_obstructed(self):
         board = Board()
-        player = Player(Team.WHITE)
+        player = Player("player", Team.WHITE)
 
         queen = place(board, player, Queen, (7, 4))
         place(board, player, King, (7, 3))
@@ -190,7 +223,7 @@ class TestRulesMoves(unittest.TestCase):
 
     def test_queen_open(self):
         board = Board()
-        player = Player(Team.WHITE)
+        player = Player("player", Team.WHITE)
 
         queen = place(board, player, Queen, (4, 4))
         valid_moves = RulesEngine.get_valid_moves(queen, board)
@@ -232,7 +265,7 @@ class TestRulesMoves(unittest.TestCase):
 
     def test_rook_default(self):
         board = Board()
-        player = Player(Team.WHITE)
+        player = Player("player", Team.WHITE)
 
         rook = place(board, player, Rook, (7, 0))
         valid_moves = RulesEngine.get_valid_moves(rook, board)
@@ -248,7 +281,7 @@ class TestRulesMoves(unittest.TestCase):
 
     def test_rook_obstructed(self):
         board = Board()
-        player = Player(Team.WHITE)
+        player = Player("player", Team.WHITE)
 
         rook = place(board, player, Rook, (7, 0))
         place(board, player, Pawn, (6, 0))
@@ -259,7 +292,7 @@ class TestRulesMoves(unittest.TestCase):
 
     def test_rook_open(self):
         board = Board()
-        player = Player(Team.WHITE)
+        player = Player("player", Team.WHITE)
 
         rook = place(board, player, Rook, (4, 4))
         valid_moves = RulesEngine.get_valid_moves(rook, board)
@@ -286,10 +319,11 @@ class TestRulesMoves(unittest.TestCase):
 class TestRulesActions(unittest.TestCase):
     def test_bishop_attack_one(self):
         board = Board()
-        player = Player(Team.WHITE)
+        white = Player("white", Team.WHITE)
+        black = Player("black", Team.BLACK)
 
-        bishop: Bishop = place(board, player, Bishop, (4, 4))
-        pawn: Pawn = place(board, player, Pawn, (3, 3))
+        bishop: Bishop = place(board, white, Bishop, (4, 4))
+        pawn: Pawn = place(board, black, Pawn, (3, 3))
         slash = Attack(
             name="Slash",
             description="",
@@ -310,11 +344,12 @@ class TestRulesActions(unittest.TestCase):
 
     def test_bishop_attack_multi(self):
         board = Board()
-        player = Player(Team.WHITE)
+        white = Player("white", Team.WHITE)
+        black = Player("black", Team.BLACK)
 
-        bishop: Bishop = place(board, player, Bishop, (4, 4))
-        pawn1: Pawn = place(board, player, Pawn, (3, 3))
-        pawn2: Pawn = place(board, player, Pawn, (6, 6))
+        bishop: Bishop = place(board, white, Bishop, (4, 4))
+        pawn1: Pawn = place(board, black, Pawn, (3, 3))
+        pawn2: Pawn = place(board, black, Pawn, (6, 6))
         slash = Attack(
             name="Slash",
             description="",
@@ -347,12 +382,13 @@ class TestRulesActions(unittest.TestCase):
 
     def test_bishop_attack_multi_blocked(self):
         board = Board()
-        player = Player(Team.WHITE)
+        white = Player("white", Team.WHITE)
+        black = Player("black", Team.BLACK)
 
-        bishop: Bishop = place(board, player, Bishop, (4, 4))
-        pawn_blocked: Pawn = place(board, player, Pawn, (2, 2))
-        pawn1: Pawn = place(board, player, Pawn, (3, 3))
-        pawn2: Pawn = place(board, player, Pawn, (6, 6))
+        bishop: Bishop = place(board, white, Bishop, (4, 4))
+        pawn_blocked: Pawn = place(board, black, Pawn, (2, 2))
+        pawn1: Pawn = place(board, black, Pawn, (3, 3))
+        pawn2: Pawn = place(board, black, Pawn, (6, 6))
         slash = Attack(
             name="Slash",
             description="",
@@ -389,10 +425,11 @@ class TestRulesActions(unittest.TestCase):
 
     def test_bishop_spell_one(self):
         board = Board()
-        player = Player(Team.WHITE)
+        white = Player("white", Team.WHITE)
+        black = Player("black", Team.BLACK)
 
-        bishop: Bishop = place(board, player, Bishop, (4, 4))
-        pawn: Pawn = place(board, player, Pawn, (3, 3))
+        bishop: Bishop = place(board, white, Bishop, (4, 4))
+        pawn: Pawn = place(board, black, Pawn, (3, 3))
 
         magic_missile = Spell(
             name="Magic Missile",
@@ -413,11 +450,12 @@ class TestRulesActions(unittest.TestCase):
 
     def test_bishop_spell_multi(self):
         board = Board()
-        player = Player(Team.WHITE)
+        white = Player("white", Team.WHITE)
+        black = Player("black", Team.BLACK)
 
-        bishop: Bishop = place(board, player, Bishop, (4, 4))
-        pawn1: Pawn = place(board, player, Pawn, (3, 3))
-        pawn2: Pawn = place(board, player, Pawn, (5, 5))
+        bishop: Bishop = place(board, white, Bishop, (4, 4))
+        pawn1: Pawn = place(board, black, Pawn, (3, 3))
+        pawn2: Pawn = place(board, black, Pawn, (5, 5))
 
         magic_missile = Spell(
             name="Magic Missile",
