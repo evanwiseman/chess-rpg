@@ -4,7 +4,7 @@ from src.entities.pieces import Piece
 from .board import Board
 
 
-class Rules:
+class RulesEngine:
     @staticmethod
     def get_valid_moves(
         piece: Piece,
@@ -68,7 +68,6 @@ class Rules:
                 target_entity = board.get_entity_at(target_pos)
                 if target_entity is None or target_entity == piece:
                     continue
-
                 actions.append(
                     AttackAction(
                         actor=piece,
@@ -81,7 +80,8 @@ class Rules:
         for spell in piece.spell_book.all_spells():
             for target_pos in _raycast_targets(spell.cast_range):
                 target_entity = board.get_entity_at(target_pos)
-                # Some spells might target empty tiles
+                if target_entity is None or target_entity == piece:
+                    continue
                 actions.append(
                     SpellAction(
                         actor=piece,

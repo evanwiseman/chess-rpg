@@ -124,21 +124,6 @@ class Board:
             self._id_location_map[actor.id] = end
 
             return MoveResult(move, status=MoveStatus.COMPLETED, target=None)
-
-        elif move.move_type == MoveType.ATTACK:
-            if move.target is None:
-                raise ValueError("Attack move requires a target")
-            target = self.get_entity_at(end)
-            if target != move.target:
-                raise ValueError(f"Attack target mismatch at {end}")
-
-            # Board doesn’t resolve damage, just validates.
-            return MoveResult(move, status=MoveStatus.PENDING, target=target)
-
-        elif move.move_type == MoveType.CASTLE:
-            # Move king + rook here
-            pass
-
         elif move.move_type == MoveType.SPECIAL:
             # Defer to higher-level game systems
             return {"special": True, "actor": actor, "target": move.target}

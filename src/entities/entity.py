@@ -6,6 +6,11 @@ class Entity:
         Entity._next_id += 1
         self.name = name
 
+    def __eq__(self, other: 'Entity'):
+        return (
+            self._id == other._id
+        )
+
     def __repr__(self):
         return f"<Entity {self.name} ({self.id})>"
 

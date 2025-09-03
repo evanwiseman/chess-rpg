@@ -27,12 +27,6 @@ class Piece(Entity):
         self.attack_book = AttackBook()
         self._equipment_manager = EquipmentManager()
 
-    def __eq__(self, other: 'Piece'):
-        return (
-            self.name == other.name
-            and self.stats == other.stats
-        )
-
     def get_move_range(self):
         return self.stats["move_range"].value
 

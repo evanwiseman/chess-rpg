@@ -23,11 +23,11 @@ class Action:
     def type(self):
         raise NotImplementedError
 
-    def execute(self):
+    def __eq__(self, other):
         raise NotImplementedError
 
     def __repr__(self):
         return (
-            f"<{self.__class__.__name__} | "
-            f"actor={self.actor} target={self.target}>"
+            f"<{self.__class__.__name__}("
+            f"actor={self.actor} target={self.target})>"
         )

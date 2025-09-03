@@ -205,7 +205,7 @@ class TestEquipmentManager(unittest.TestCase):
         equipment_manager.add_equipment(EquipmentSlot.NECKLACE, necklace)
 
         self.assertListEqual(
-            equipment_manager.get_equipped_items(),
+            equipment_manager.get_equipped_list(),
             [
                 helmet,
                 armor,

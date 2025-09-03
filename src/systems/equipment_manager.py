@@ -156,7 +156,7 @@ class EquipmentManager:
         """
         return self._equipped.copy()
 
-    def get_equipped_items(self) -> List[Equipment]:
+    def get_equipped_list(self) -> List[Equipment]:
         """
         Return a list of all equipped items.
 
