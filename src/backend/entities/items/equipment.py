@@ -1,5 +1,5 @@
 from .item import Item
-from src.backend.foundation import EquipmentSlot
+from src.backend.foundation.enums import EquipmentSlot
 
 
 class Equipment(Item):

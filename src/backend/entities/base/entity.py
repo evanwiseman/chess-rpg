@@ -1,3 +1,4 @@
+import copy
 from typing import Optional, TYPE_CHECKING
 if TYPE_CHECKING:
     from src.backend.core.player import Player
@@ -19,6 +20,21 @@ class Entity:
 
     def __repr__(self):
         return f"<Entity {self.name} ({self.id})>"
+
+    def __deepcopy__(self, memo):
+        cls = self.__class__
+        new_obj = cls.__new__(cls)  # create empty instance
+        memo[id(self)] = new_obj
+
+        # copy attributes, but generate new id
+        for k, v in self.__dict__.items():
+            if k == "_id":
+                continue
+            setattr(new_obj, k, copy.deepcopy(v, memo))
+
+        new_obj._id = Entity._next_id
+        Entity._next_id += 1
+        return new_obj
 
     @property
     def owner(self) -> 'Player':

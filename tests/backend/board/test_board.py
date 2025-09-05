@@ -1,14 +1,14 @@
 import unittest
 from src.backend.board import Board
-from src.backend.entities.pieces import Pawn, King
+from src.backend.entities.pieces import Piece
 from src.backend.entities.items import Item
 
 
 class TestBoard(unittest.TestCase):
     def setUp(self):
         self.board = Board(rows=8, cols=8)
-        self.pawn = Pawn()
-        self.king = King()
+        self.pawn = Piece("pawn")
+        self.king = Piece("king")
         self.item = Item("Health Potion")
 
     # --- Piece Tests ---

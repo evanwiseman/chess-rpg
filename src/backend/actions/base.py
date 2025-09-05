@@ -1,62 +1,32 @@
-from typing import Any, Optional, TYPE_CHECKING
-from src.backend.foundation import ActionType
-
+from abc import ABC, abstractmethod
+from typing import Optional, Tuple, TYPE_CHECKING
+from src.backend.foundation import ActionCategory, ActionResult
 if TYPE_CHECKING:
     from src.backend.entities.base import Entity
 
 
-class Action:
+class BaseAction(ABC):
+    category: ActionCategory = ActionCategory.MOVE
+    requires_target: bool = False
+
     def __init__(
         self,
         actor: 'Entity',
-        payload: Any,
         target: Optional['Entity'] = None,
-        type: ActionType = ActionType.OTHER
+        target_pos: Optional[Tuple[int, int]] = None,
+        **kwargs
     ):
         self.actor = actor
-        self.payload = payload
         self.target = target
-        self._type = type
+        self.target_pos = target_pos
+        self.metadata = kwargs
 
-    @property
-    def type(self):
-        return self._type
-
+    @abstractmethod
     def can_execute(self) -> bool:
-        """Check if this action can be executed."""
-        pass
+        """Each action knows its own validation rules."""
+        raise NotImplementedError
 
-    def execute(self) -> bool:
-        """Execute this action."""
-        pass
-
-    def __eq__(self, other: 'Action'):
-        if not isinstance(other, Action):
-            return False
-        return (
-            self.actor == other.actor
-            and self.payload == other.payload
-            and self.target == other.target
-            and self.type == other.type
-        )
-
-    def __repr__(self) -> str:
-        """String representation of the action."""
-        # Safe attribute access since these might not exist
-        if self.actor:
-            actor_name = getattr(self.actor, "name", str(self.actor))
-        else:
-            actor_name = "None"
-
-        if self.target:
-            target_name = getattr(self.target, "name", str(self.target))
-        else:
-            target_name = "None"
-
-        return (
-            f"<{self.__class__.__name__}("
-            f"actor={actor_name}, "
-            f"payload={self.payload}, "
-            f"target={target_name}, "
-            f"type={self.type.name})>"
-        )
+    @abstractmethod
+    def execute(self):
+        """Each action handles its own execution logic."""
+        raise NotImplementedError

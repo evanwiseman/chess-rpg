@@ -1,48 +1,57 @@
-from typing import Callable
+from typing import Optional
+from .stat import Stat
 
 
-class Resource:
-    def __init__(self, stat_getter: Callable):
-        """
-        Creates a new resource
-
-        Args:
-            stat_getter: a callable that returns the current_ max
-        """
-        self._stat_getter = stat_getter
-        self._current = stat_getter()
+class Resource(Stat):
+    def __init__(
+        self,
+        name: str,
+        base_value: float,
+        current: Optional[float] = None,
+        **kwargs
+    ):
+        super().__init__(name, base_value, **kwargs)
+        self._current = current if current is not None else base_value
 
     @property
     def max(self) -> int:
-        return self._stat_getter()
+        """Current max after modifiers (from Stat.value)."""
+        return int(self.value)
 
     @property
     def current(self) -> int:
-        return min(self._current, self.max)
+        return min(int(self._current), self.max)
 
     @current.setter
-    def current(self, value: int):
-        self._current = max(0, min(value, self.max))
+    def current(self, val: float):
+        self._current = max(0, min(val, self.max))
 
-    def take(self, amount: int):
-        if amount < 0:
-            raise ValueError(
-                "Error: (Resource.take) cannot take negative amount."
-            )
+    # --- Helpers ---
+    def take(self, amount: float):
         self.current -= amount
 
-    def give(self, amount: int):
-        if amount < 0:
-            raise ValueError(
-                "Error: (Resource.give) cannot give negative amount"
-            )
+    def give(self, amount: float):
         self.current += amount
+
+    def refill(self):
+        self._current = self.value
 
     def is_depleted(self) -> bool:
         return self.current <= 0
 
-    def refill(self):
-        self.current = self.max
+    # --- Serialization ---
+    def serialize(self) -> dict:
+        data = super().serialize()
+        data["current"] = self._current
+        return data
 
-    def __repr__(self):
-        return f"<Resource {self.current}/{self.max}>"
+    @classmethod
+    def deserialize(cls, data: dict) -> "Resource":
+        stat = Stat.deserialize(data)
+        current = data.get("current", stat.value)
+        return cls(
+            stat.name,
+            stat.base_value, current=current,
+            min_value=stat.min_value,
+            max_value=stat.max_value
+        )

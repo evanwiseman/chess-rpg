@@ -1,7 +1,7 @@
 import unittest
 
 from src.backend.entities.items import Equipment
-from src.backend.foundation import EquipmentSlot
+from src.backend.foundation.enums import EquipmentSlot
 
 
 class TestEquipment(unittest.TestCase):

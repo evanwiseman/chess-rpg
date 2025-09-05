@@ -1,8 +1,13 @@
-from .modifier import Modifier, ModifierType
+from .modifier import Modifier
 from .resource import Resource
+from .resource_manager import ResourceManager
 from .stat import Stat
-from .stats import Stats
+from .stats_manager import StatsManager
 
 __all__ = [
-    "Modifier", "ModifierType", "Resource", "Stat", "Stats"
+    "Modifier",
+    "Resource",
+    "ResourceManager",
+    "Stat",
+    "StatsManager"
 ]

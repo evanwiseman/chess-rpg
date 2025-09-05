@@ -1,16 +1,24 @@
 from enum import Enum
 
 
-class ActionType(Enum):
+class ActionResult(Enum):
+    """Possible outcomes of action execution"""
+    SUCCESS = "success"
+    FAILED = "failed"
+    BLOCKED = "blocked"
+    INSUFFICIENT_RESOURCES = "insufficient_resources"
+    INVALID_TARGET = "invalid_target"
+    OUT_OF_RANGE = "out_of_range"
+
+
+class ActionCategory(Enum):
+    """High-level action categories"""
+    MOVE = "move"
     ATTACK = "attack"
     SPELL = "spell"
+    ABILITY = "ability"
     ITEM = "item"
-    OTHER = "other"
-
-
-class MoveType(Enum):
-    MOVE = "move"
-    SPECIAL = "special"
+    INTERACT = "interact"
 
 
 class Team(Enum):
@@ -26,3 +34,12 @@ class EquipmentSlot(Enum):
     BOOTS = "boots"
     RING = "ring"
     NECKLACE = "necklace"
+
+
+class ModifierType(Enum):
+    """
+    Types of modifiers that can be applied to stats.
+    """
+    FLAT = "flat"
+    PERCENTAGE = "percentage"
+    MULTIPLIER = "multiplier"
