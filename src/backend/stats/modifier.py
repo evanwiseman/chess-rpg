@@ -1,6 +1,6 @@
 from dataclasses import dataclass
 from enum import Enum
-from typing import Optional
+from typing import Dict, Optional
 
 
 class ModifierType(Enum):
@@ -14,6 +14,9 @@ class ModifierType(Enum):
 
 @dataclass
 class Modifier:
+    """
+    Container to hold modifier data.
+    """
     name: str
     value: float
     modifier_type: ModifierType
@@ -21,6 +24,9 @@ class Modifier:
     duration: Optional[int] = None
 
     def apply(self, value: float) -> float:
+        """
+        Apply the modifer to value and return new value.
+        """
         if self.modifier_type == ModifierType.FLAT:
             return value + self.value
         elif self.modifier_type == ModifierType.PERCENTAGE:
@@ -30,12 +36,35 @@ class Modifier:
         return value
 
     def tick(self) -> bool:
-        """Decrement duration, return True if expired."""
+        """
+        Decrement duration, return True if expired.
+        """
         if self.duration is not None:
             self.duration -= 1
             return self.duration <= 0
         return False
 
+    # --- Serialization ---
+    def serialize(self) -> Dict:
+        return {
+            "name": self.name,
+            "value": self.value,
+            "modifier_type": self.modifier_type.value,
+            "source": self.source,
+            "duration": self.duration
+        }
+
+    @classmethod
+    def deserialize(cls, data: Dict) -> 'Modifier':
+        return cls(
+            name=data["name"],
+            value=data["value"],
+            modifier_type=ModifierType(data["modifier_type"]),
+            source=data.get("source"),
+            duration=data.get("duration")
+        )
+
+    # --- Overrides ---
     def __eq__(self, other: 'Modifier'):
         return (
             self.name == other.name
@@ -52,23 +81,3 @@ class Modifier:
             return f"{self.value:+}%"
         elif self.modifier_type == ModifierType.MULTIPLIER:
             return f"x{self.value}"
-
-    # --- Serialization ---
-    def serialize(self) -> dict:
-        return {
-            "name": self.name,
-            "value": self.value,
-            "modifier_type": self.modifier_type.value,
-            "source": self.source,
-            "duration": self.duration
-        }
-
-    @classmethod
-    def deserialize(cls, data: dict) -> 'Modifier':
-        return cls(
-            name=data["name"],
-            value=data["value"],
-            modifier_type=ModifierType(data["modifier_type"]),
-            source=data.get("source"),
-            duration=data.get("duration")
-        )
