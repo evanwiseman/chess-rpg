@@ -1,12 +1,8 @@
-from collections import defaultdict
-from typing import Dict, List, Optional, Set, Union
+from typing import Dict, List, Optional
 from .modifier import Modifier, ModifierType
 
 
 class Stat:
-    """
-    Represents a single stat than can have modifiers applied.
-    """
     def __init__(
         self,
         name: str,
@@ -19,8 +15,7 @@ class Stat:
         self.min_value = min_value
         self.max_value = max_value
 
-        self._modifiers: Dict[str, Modifier] = {}
-        self._sources: Dict[str, Set[str]] = defaultdict(Set[str])
+        self._modifiers: List[Modifier] = []
 
         self._cached_value: Optional[float] = None
         self._cache_dirty = True
@@ -33,7 +28,6 @@ class Stat:
             and self._modifiers == other._modifiers
             and self.min_value == other.min_value
             and self.max_value == other.max_value
-            and self._sources == other._sources
             and self._cached_value == other._cached_value
             and self._cache_dirty == other._cache_dirty
         )
@@ -43,16 +37,10 @@ class Stat:
 
     @property
     def base_value(self) -> float:
-        """
-        Get the base value.
-        """
         return self._base_value
 
     @base_value.setter
     def base_value(self, value: float):
-        """
-        Set the base value and invalidate the cache.
-        """
         self._base_value = value
         self._cache_dirty = True
 
@@ -63,9 +51,6 @@ class Stat:
         return int(self._cached_value)
 
     def _calculate_value(self):
-        """
-        Calculate the final value after applying modifiers.
-        """
         value = self._base_value
 
         for modifier_type in [
@@ -73,120 +58,60 @@ class Stat:
             ModifierType.PERCENTAGE,
             ModifierType.MULTIPLIER
         ]:
-            for modifier in self._modifiers.values():
+            for modifier in self._modifiers:
                 if modifier.modifier_type == modifier_type:
                     value = modifier.apply(value)
 
         self._cached_value = max(self.min_value, min(self.max_value, value))
         self._cache_dirty = False
 
-    def add_modifier(
-        self,
-        mod: Union[Modifier, str, int, float],
-        name: Optional[str] = None,
-        source: Optional[str] = None,
-        duration: Optional[int] = None
-    ):
-        """
-        Add modifer with Modifier, str, int, or float.
-        If not adding with Modifier must provide a name.
-        """
-        if isinstance(mod, Modifier):
-            modifier = mod
-        elif isinstance(mod, str):
-            if not name:
-                raise ValueError("Modifiers from shorthand require a name")
+    def get_modifier(self, name: str) -> Optional[Modifier]:
+        for mod in self._modifiers:
+            if mod.name == name:
+                return mod
+        return None
 
-            if mod.endswith("%"):               # Percentage
-                modifier = Modifier(
-                    name,
-                    float(mod.strip("%")),
-                    ModifierType.PERCENTAGE,
-                    source,
-                    duration
-                )
-            elif mod.startswith("x"):           # Mutliplier
-                modifier = Modifier(
-                    name,
-                    float(mod[1:]),
-                    ModifierType.MULTIPLIER,
-                    source,
-                    duration
-                )
-            else:                               # Flat
-                modifier = Modifier(
-                    name,
-                    float(mod),
-                    ModifierType.FLAT,
-                    source,
-                    duration
-                )
-        elif isinstance(mod, (int, float)):     # Flat
-            modifier = Modifier(
-                name,
-                float(mod),
-                ModifierType.FLAT,
-                source,
-                duration
-            )
-        else:
-            raise TypeError("Invalid modifier type")
-
-        self._modifiers[modifier.name] = modifier
-        if modifier.source:
-            self._sources[modifier.name].add(modifier.name)
+    def add_modifier(self, modifier: Modifier):
+        self._modifiers.append(modifier)
         self._cache_dirty = True
 
-    def remove_modifier(self, name: str) -> bool:
-        """Remove a modifier by name."""
-        if name in self._modifiers:
-            source = self._modifiers[name].source
-            del self._modifiers[name]
-            if source and source in self._sources:
-                self._sources[source].discard(name)
-                if not self._sources[source]:
-                    del self._sources[source]
+    def remove_modifier(self, modifier: Modifier):
+        if modifier in self._modifiers:
+            self._modifiers.remove(modifier)
             self._cache_dirty = True
 
-    def remove_modifiers_by_source(self, source: str) -> bool:
-        """Remove all modifiers from a given source (e.g., item unequipped)."""
-        if source not in self._sources:
-            return False
-        for name in list(self._sources[source]):
-            del self._modifiers[name]
-        del self._sources[source]
-        self._cache_dirty = True
+    def remove_modifiers_by_source(self, source: str):
+        before = len(self._modifiers)
+        self._modifiers = [m for m in self._modifiers if m.source != source]
+        if len(self._modifiers) != before:
+            self._cache_dirty = True
 
     def tick(self) -> List[Modifier]:
         expired = []
-        for name, mod in list(self._modifiers.items()):
-            if mod.tick():
-                expired.append(name)
-                self.remove_modifier(name)
+        for modifier in self._modifiers:
+            if modifier.tick():
+                expired.append(modifier)
+                self.remove_modifier(modifier)
         return expired
 
     # --- Serialization ---
-    def serialize(self) -> dict:
+    def serialize(self) -> Dict:
         return {
             "name": self.name,
             "base_value": self._base_value,
             "min_value": self.min_value,
             "max_value": self.max_value,
-            "modifiers": {
-                name: modifier.serialize()
-                for name, modifier in self._modifiers.items()
-            }
+            "modifiers": [m.serialize() for m in self._modifiers]
         }
 
     @classmethod
-    def deserialize(cls, data: dict) -> 'Stat':
+    def deserialize(cls, data: dict) -> "Stat":
         stat = cls(
             name=data["name"],
             base_value=data["base_value"],
             min_value=data["min_value"],
-            max_value=data["max_value"]
+            max_value=data["max_value"],
         )
-
-        for mod_data in data.get("modifiers", {}).values():
+        for mod_data in data.get("modifiers", []):
             stat.add_modifier(Modifier.deserialize(mod_data))
         return stat

@@ -1,9 +1,9 @@
 import hashlib
 import json
-from src.backend.entities.base import Interactable
+from src.backend.entities.base import Entity
 
 
-class Item(Interactable):
+class Item(Entity):
     def __init__(
         self, name: str,
         description: str = "",

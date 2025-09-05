@@ -49,9 +49,14 @@ class Resource(Stat):
     def deserialize(cls, data: dict) -> "Resource":
         stat = Stat.deserialize(data)
         current = data.get("current", stat.value)
-        return cls(
+        res = cls(
             stat.name,
-            stat.base_value, current=current,
+            stat.base_value,
+            current=current,
             min_value=stat.min_value,
             max_value=stat.max_value
         )
+        # Copy modifiers from deserialized stat
+        for mod in stat._modifiers:
+            res.add_modifier(mod)
+        return res

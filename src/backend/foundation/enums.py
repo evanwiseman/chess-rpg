@@ -34,12 +34,3 @@ class EquipmentSlot(Enum):
     BOOTS = "boots"
     RING = "ring"
     NECKLACE = "necklace"
-
-
-class ModifierType(Enum):
-    """
-    Types of modifiers that can be applied to stats.
-    """
-    FLAT = "flat"
-    PERCENTAGE = "percentage"
-    MULTIPLIER = "multiplier"

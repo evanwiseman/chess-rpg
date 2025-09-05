@@ -1,4 +1,5 @@
-from typing import Dict
+from typing import Dict, List
+from .modifier import Modifier
 from .resource import Resource
 
 
@@ -45,6 +46,19 @@ class ResourceManager:
     def __repr__(self):
         stats = ", ".join(f"{k}={v.value}" for k, v in self._resources.items())
         return f"<Stats stats=[{stats}]>"
+
+    # --- Tick ---
+    def tick(self) -> Dict[str, List[Modifier]]:
+        """
+        Tick all resources, returning a dict mapping resource names
+        to lists of expired modifiers.
+        """
+        expired_modifiers: Dict[str, List[Modifier]] = {}
+        for key, res in self._resources.items():
+            expired = res.tick()
+            if expired:
+                expired_modifiers[key] = expired
+        return expired_modifiers
 
     # --- Serialization ---
     def serialize(self) -> dict:

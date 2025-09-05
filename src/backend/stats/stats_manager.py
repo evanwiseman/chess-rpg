@@ -1,4 +1,5 @@
-from typing import Dict
+from typing import Dict, List
+from .modifier import Modifier
 from .stat import Stat
 
 
@@ -32,6 +33,14 @@ class StatsManager:
     def contains_stat(self, name: str) -> bool:
         key = self._normalize_name(name)
         return key in self._stats
+
+    def tick(self) -> Dict[str, List[Modifier]]:
+        expired_modifiers: Dict[str, List[Modifier]] = {}
+        for key, stat in self._stats.items():
+            expired = stat.tick()
+            if expired:
+                expired_modifiers[key] = expired
+        return expired_modifiers
 
     # --- Convenience ---
     def __getitem__(self, name: str):

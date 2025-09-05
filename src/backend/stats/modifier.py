@@ -1,6 +1,15 @@
 from dataclasses import dataclass
+from enum import Enum
 from typing import Optional
-from src.backend.foundation.enums import ModifierType
+
+
+class ModifierType(Enum):
+    """
+    Types of modifiers that can be applied to stats.
+    """
+    FLAT = "flat"
+    PERCENTAGE = "percentage"
+    MULTIPLIER = "multiplier"
 
 
 @dataclass
