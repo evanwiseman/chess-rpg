@@ -1,8 +1,8 @@
 from typing import Dict, List, Optional, Tuple, TYPE_CHECKING
 from .cell import Cell
 if TYPE_CHECKING:
-    from src.backend.entities.base import Entity
-    from src.backend.entities.items import Item
+    from src.backend.entities import Entity
+    from src.backend.items import Item
     from src.backend.entities.pieces import Piece
 
 

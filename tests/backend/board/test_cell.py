@@ -1,7 +1,7 @@
 import unittest
 from src.backend.board.cell import Cell
 from src.backend.entities.pieces import Piece
-from src.backend.entities.items import Item
+from src.backend.items import Item
 
 
 class TestCell(unittest.TestCase):

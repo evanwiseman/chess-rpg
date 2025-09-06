@@ -24,13 +24,3 @@ class ActionCategory(Enum):
 class Team(Enum):
     WHITE = "white",
     BLACK = "black"
-
-
-class EquipmentSlot(Enum):
-    HELMET = "helmet"
-    ARMOR = "armor"
-    GLOVES = "gloves"
-    LEGS = "legs"
-    BOOTS = "boots"
-    RING = "ring"
-    NECKLACE = "necklace"

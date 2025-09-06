@@ -1,7 +1,7 @@
 # src/board/cell.py
 from typing import Optional, TYPE_CHECKING
 if TYPE_CHECKING:
-    from src.backend.entities.items import Item
+    from src.backend.items import Item
     from src.backend.entities.pieces import Piece
 
 

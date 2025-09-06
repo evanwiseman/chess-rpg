@@ -1,6 +1,5 @@
 from typing import Dict, List, Optional
-from src.backend.foundation.enums import EquipmentSlot
-from .equipment import Equipment
+from .equipment import Equipment, EquipmentSlot
 
 
 class EquipmentManager:
@@ -17,17 +16,17 @@ class EquipmentManager:
         return self._equipped.get(slot)
 
     def add_equipment(self, equipment: Equipment) -> Optional[Equipment]:
-        return self.add_equipment_to_slot(equipment.slot, equipment)
+        return self.add_equipment_to_slot(equipment._slot, equipment)
 
     def add_equipment_to_slot(
         self,
         slot: EquipmentSlot,
         equipment: Equipment
     ) -> Optional[Equipment]:
-        if equipment.slot != slot:
+        if equipment._slot != slot:
             raise ValueError(
                 f"Equipment slot mismatch: expected '{slot.name}', "
-                f"got '{equipment.slot.name}'"
+                f"got '{equipment._slot.name}'"
             )
 
         previous_equipment = self._equipped[slot]
@@ -35,7 +34,7 @@ class EquipmentManager:
         return previous_equipment
 
     def remove_equipment(self, equipment: Equipment) -> Optional[Equipment]:
-        return self.remove_equipment_from_slot(equipment.slot)
+        return self.remove_equipment_from_slot(equipment._slot)
 
     def remove_equipment_from_slot(
         self,
