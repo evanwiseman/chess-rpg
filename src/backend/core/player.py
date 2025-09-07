@@ -29,7 +29,7 @@ class Player:
         return self.team == other.team
 
     def add_piece(self, piece: 'Piece'):
-        piece._owner = self
+        piece._parent = self
         self.pieces[piece.id] = piece
 
     def remove_piece(self, piece: 'Piece'):

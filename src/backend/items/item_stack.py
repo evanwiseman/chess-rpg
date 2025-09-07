@@ -1,9 +1,13 @@
-from typing import List, Optional
+from typing import List, Optional, Set
 from .item import Item
 
 
 class StackFullError(Exception):
-    pass
+    def __init__(self, *args):
+        super().__init__(*args)
+
+    def __str__(self):
+        return super().__str__()
 
 
 class ItemStack:
@@ -21,13 +25,22 @@ class ItemStack:
         self._typeid = items[0].type_id
         for item in items:
             if item.type_id != self._typeid:
-                raise ValueError("All items in stack must be identical")
+                raise ValueError("All items in stack must have same typeid")
+
+        # Validate unique ids
+        self._ids = set([item.id for item in items])
+        if len(self._ids) < len(items):
+            raise ValueError("All items in stack must have unique id")
 
         self._items: List[Item] = items.copy()
 
     @property
     def items(self) -> List[Item]:
         return self._items.copy()
+
+    @property
+    def ids(self) -> Set[str]:
+        return self._ids
 
     @property
     def quantity(self) -> int:
@@ -57,9 +70,6 @@ class ItemStack:
         """
         return quantity <= self.remaining
 
-    def get_items(self) -> List[Item]:
-        return self._items
-
     def pop_item(self) -> Item:
         """
         Remove an item from the top of the stack. Raises a value
@@ -67,7 +77,9 @@ class ItemStack:
         """
         if not self._items:
             raise ValueError("Cannot pop from an empty stack")
-        return self._items.pop()
+        item = self._items.pop()
+        self._ids.discard(item.id)
+        return item
 
     def peek_item(self) -> Item:
         """
@@ -85,10 +97,13 @@ class ItemStack:
         """
         if item.type_id != self._typeid:
             raise ValueError("Item doesn't match stack")
-        if self.has_space():
-            self._items.append(item)
-        else:
+        if item.id in self._ids:
+            raise KeyError("Item is already in stack")
+        if not self.has_space():
             raise StackFullError(f"Stack is full: max {self._max_quantity}")
+
+        self._items.append(item)
+        self._ids.add(item.id)
 
     def split_stack(self, quantity: Optional[int] = None) -> 'ItemStack':
         """
@@ -104,9 +119,19 @@ class ItemStack:
             self._items.clear()
             return new_stack
 
-        split_items = self._items[-quantity:]
-        self._items = self._items[:-quantity]
+        split_items = []
+        for _ in range(quantity):
+            split_items.append(self.pop_item())
         return ItemStack(split_items)
+
+    def clone(self):
+        items = []
+        for item in self._items:
+            items.append(item.clone)
+        return ItemStack(items)
+
+    def __iter__(self):
+        yield from self._items
 
     def __repr__(self):
         return (

@@ -8,7 +8,7 @@ class Item:
         self,
         name: str,
         description: str = "",
-        max_quantity: int = 10,
+        max_quantity: int = 5,
         item_id: str = None
     ):
         self.name = name

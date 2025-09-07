@@ -4,6 +4,14 @@ from .item import Item
 from .item_stack import ItemStack
 
 
+class ItemManagerFullError(RuntimeError):
+    def __init__(self, *args):
+        super().__init__(*args)
+
+    def __str__(self):
+        return super().__str__()
+
+
 class ItemManager:
     def __init__(self, max_stacks: int = 6):
         # Track every item instance by unique ID
@@ -18,11 +26,26 @@ class ItemManager:
         # Master ordered list to keep track of all stacks (for GUI)
         self._all_stacks: List[ItemStack] = []
 
-        self.max_stacks = max_stacks
+        self._max_stacks = max_stacks
+
+    @property
+    def max_stacks(self) -> int:
+        return self._max_stacks
 
     # --- Helpers ---
     def _get_type_id(self, item: Item) -> str:
         return item.type_id
+
+    def _validate_item(self, item: Item) -> bool:
+        if item.id in self._id_to_item:
+            return False
+        return True
+
+    def _validate_stack(self, item_stack: ItemStack):
+        for id in item_stack.ids:
+            if id in self._id_to_item:
+                return False
+        return True
 
     def _register_stack(self, item_stack: ItemStack):
         self._type_id_to_stacks[item_stack.type_id].append(item_stack)
@@ -59,7 +82,14 @@ class ItemManager:
         except ValueError:
             pass
 
+    def has_room(self):
+        return len(self.get_all_stacks()) < self._max_stacks
+
     # -- Item Operations ---
+    def has_item(self, item_name: str, quantity: int = 1) -> bool:
+        """Check if we have at least `quantity` items by name."""
+        return len(self._name_to_ids.get(item_name, [])) >= quantity
+
     def add_item(self, item: Item, quantity: int = 1):
         """Add quantity of an item, splitting across stacks if needed."""
         if quantity <= 0:
@@ -81,9 +111,10 @@ class ItemManager:
 
         # Create new stacks if needed
         while remaining > 0:
-            if len(self._all_stacks) >= self.max_stacks:
+            if len(self._all_stacks) >= self._max_stacks:
                 raise RuntimeError(
-                    f"Cannot add item: inventory full ({self.max_stacks} slots)"
+                    "Cannot add item: "
+                    f"inventory full ({self._max_stacks} slots)"
                 )
 
             stack_size = min(item.max_quantity, remaining)
@@ -148,19 +179,50 @@ class ItemManager:
         stacks = self._type_id_to_stacks.get(type_id, [])
         items = []
         for stack in stacks:
-            items.extend(stack.get_items())
+            items.extend(stack.items)
         return items
 
     def get_all_items(self) -> List[Item]:
         """Return all items managed by this manager."""
         return list(self._id_to_item.values())
 
-    def has_item(self, item_name: str, quantity: int = 1) -> bool:
-        """Check if we have at least `quantity` items by name."""
-        return len(self._name_to_ids.get(item_name, [])) >= quantity
-
     # --- Stack Operations ---
-    def get_item_stacks(self, item: Item) -> List[ItemStack]:
+    def add_stack(self, item_stack: ItemStack):
+        if not self.has_room():
+            raise ItemManagerFullError(
+                f"No room in ItemManager to add {item_stack}"
+            )
+
+        # Check if stack in typeid map
+        type_id = item_stack.type_id
+        if (
+            type_id in self._type_id_to_stacks
+            and item_stack in self._type_id_to_stacks[type_id]
+        ):
+            raise ValueError("Stack is already in ItemManager")
+
+        # Register items in stack
+        for item in item_stack:
+            self._register_item(item)
+
+        # Register stack
+        self._register_stack(item_stack)
+
+    def remove_stack(self, item_stack: ItemStack) -> List[Item]:
+        if item_stack.type_id not in self._type_id_to_stacks:
+            raise KeyError(f"ItemStack {item_stack} not found")
+        removed = []
+
+        # Unregister items in stack and add to removed
+        for item in item_stack:
+            self._unregister_item(item)
+            removed.append(item)
+
+        # Unregister item stack
+        self._unregister_stack(item_stack)
+        return removed
+
+    def get_stacks(self, item: Item) -> List[ItemStack]:
         """Return all stacks of a specific item type."""
         type_id = self._get_type_id(item)
         return self._type_id_to_stacks.get(type_id, [])
@@ -204,9 +266,9 @@ class ItemManager:
         Updates ID and name mappings for the new items.
         If quantity is None split stack in half.
         """
-        if len(self._all_stacks) >= self.max_stacks:
+        if len(self._all_stacks) >= self._max_stacks:
             raise RuntimeError(
-                f"Cannot split stack: inventory full ({self.max_stacks} slots)"
+                f"Cannot split stack: inventory full ({self._max_stacks} slots)"
             )
 
         item_stacks = self._type_id_to_stacks.get(item_stack.type_id, [])

@@ -16,17 +16,17 @@ class EquipmentManager:
         return self._equipped.get(slot)
 
     def add_equipment(self, equipment: Equipment) -> Optional[Equipment]:
-        return self.add_equipment_to_slot(equipment._slot, equipment)
+        return self.add_equipment_to_slot(equipment.slot, equipment)
 
     def add_equipment_to_slot(
         self,
         slot: EquipmentSlot,
         equipment: Equipment
     ) -> Optional[Equipment]:
-        if equipment._slot != slot:
+        if equipment.slot != slot:
             raise ValueError(
                 f"Equipment slot mismatch: expected '{slot.name}', "
-                f"got '{equipment._slot.name}'"
+                f"got '{equipment.slot.name}'"
             )
 
         previous_equipment = self._equipped[slot]
@@ -34,7 +34,7 @@ class EquipmentManager:
         return previous_equipment
 
     def remove_equipment(self, equipment: Equipment) -> Optional[Equipment]:
-        return self.remove_equipment_from_slot(equipment._slot)
+        return self.remove_equipment_from_slot(equipment.slot)
 
     def remove_equipment_from_slot(
         self,

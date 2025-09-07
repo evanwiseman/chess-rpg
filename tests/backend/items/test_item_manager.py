@@ -1,5 +1,7 @@
 import unittest
-from src.backend.items import ItemManager, Item, Equipment, EquipmentSlot
+from src.backend.items import (
+    ItemManager, ItemStack, Item, Equipment, EquipmentSlot
+)
 
 
 class TestItemManager(unittest.TestCase):
@@ -10,12 +12,21 @@ class TestItemManager(unittest.TestCase):
         self.leather_armor = Equipment("Leather Armor", EquipmentSlot.ARMOR)
         self.ring = Equipment("Ring", EquipmentSlot.RING)
 
+        health_potions = [
+            self.health_potion.clone(),
+            self.health_potion.clone(),
+            self.health_potion.clone(),
+            self.health_potion.clone(),
+            self.health_potion.clone()
+        ]
+        self.health_potion_stack = ItemStack(health_potions)
+
     # --- Add Item ---
     def test_add_item(self):
         self.inventory.add_item(self.health_potion)
 
         items = self.inventory.get_all_items()
-        stacks = self.inventory.get_item_stacks(self.health_potion)
+        stacks = self.inventory.get_stacks(self.health_potion)
 
         # Validate items and stacks correct
         self.assertEqual(len(items), 1)
@@ -127,6 +138,18 @@ class TestItemManager(unittest.TestCase):
         self.assertFalse(self.inventory.has_item("Health Potion", 5))
 
     # --- Stack management ---
+    def test_add_stack(self):
+        self.inventory.add_stack(self.health_potion_stack)
+
+        stacks = self.inventory.get_all_stacks()
+        self.assertEqual(len(stacks), 1)
+        self.assertIn(self.health_potion_stack, stacks)
+
+    def test_add_stack_duplicate(self):
+        self.inventory.add_stack(self.health_potion_stack)
+        with self.assertRaises(ValueError):
+            self.inventory.add_stack(self.health_potion_stack)
+
     def test_move_stack_changes_order(self):
         self.inventory.add_item(self.health_potion, 5)  # full stack
         self.inventory.add_item(self.mana_potion, 2)   # second stack
@@ -153,7 +176,7 @@ class TestItemManager(unittest.TestCase):
     # --- Split ---
     def test_split_stack_creates_new_stack(self):
         self.inventory.add_item(self.health_potion, 4)
-        stack = self.inventory.get_item_stacks(self.health_potion)[0]
+        stack = self.inventory.get_stacks(self.health_potion)[0]
         new_stack = self.inventory.split_stack(stack, 2)
         self.assertEqual(stack.quantity, 2)
         self.assertEqual(new_stack.quantity, 2)
@@ -161,13 +184,13 @@ class TestItemManager(unittest.TestCase):
 
     def test_split_stack_default_half(self):
         self.inventory.add_item(self.health_potion, 5)
-        stack = self.inventory.get_item_stacks(self.health_potion)[0]
+        stack = self.inventory.get_stacks(self.health_potion)[0]
         new_stack = self.inventory.split_stack(stack)  # default half
         self.assertEqual(stack.quantity + new_stack.quantity, 5)
 
     def test_split_invalid_quantity_raises(self):
         self.inventory.add_item(self.health_potion, 2)
-        stack = self.inventory.get_item_stacks(self.health_potion)[0]
+        stack = self.inventory.get_stacks(self.health_potion)[0]
         with self.assertRaises(ValueError):
             self.inventory.split_stack(stack, 0)
         with self.assertRaises(ValueError):
@@ -176,7 +199,7 @@ class TestItemManager(unittest.TestCase):
     def test_split_stack_inventory_full_raises(self):
         # Fill inventory to max_stacks
         self.inventory.add_item(self.health_potion, 30)  # 6 stacks of 5
-        stack = self.inventory.get_item_stacks(self.health_potion)[0]
+        stack = self.inventory.get_stacks(self.health_potion)[0]
         with self.assertRaises(RuntimeError):
             self.inventory.split_stack(stack, 1)
 
