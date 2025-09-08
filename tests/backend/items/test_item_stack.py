@@ -30,34 +30,34 @@ class TestItemStack(unittest.TestCase):
     def test_push_pop_peek(self):
         # Push items until full
         while self.stack.has_space():
-            self.stack.push_item(self.item.clone())
+            self.stack.push(self.item.clone())
         self.assertEqual(self.stack.quantity, self.stack.max_quantity)
         # Pushing beyond max raises
         with self.assertRaises(StackFullError):
-            self.stack.push_item(self.item.clone())
+            self.stack.push(self.item.clone())
 
         # Peek returns the last item but does not remove
-        top_item = self.stack.peek_item()
+        top_item = self.stack.peek()
         self.assertEqual(top_item, self.stack.items[-1])
         self.assertEqual(self.stack.quantity, self.stack.max_quantity)
 
         # Pop removes an item
-        popped = self.stack.pop_item()
+        popped = self.stack.pop()
         self.assertEqual(popped, top_item)
         self.assertEqual(self.stack.quantity, self.stack.max_quantity - 1)
 
         # Pop until empty
         while not self.stack.is_empty():
-            self.stack.pop_item()
+            self.stack.pop()
         with self.assertRaises(ValueError):
-            self.stack.pop_item()
+            self.stack.pop()
         with self.assertRaises(ValueError):
-            self.stack.peek_item()
+            self.stack.peek()
 
     def test_has_space(self):
         self.assertTrue(self.stack.has_space())
         for _ in range(self.stack.max_quantity - 1):
-            self.stack.push_item(self.item.clone())
+            self.stack.push(self.item.clone())
         self.assertFalse(self.stack.has_space())
 
     def test_split_stack(self):
@@ -67,19 +67,19 @@ class TestItemStack(unittest.TestCase):
         self.assertEqual(stack.quantity, 5)
 
         # Split by quantity
-        split = stack.split_stack(2)
+        split = stack.split(2)
         self.assertEqual(split.quantity, 2)
         self.assertEqual(stack.quantity, 3)
 
         # Split more than quantity returns whole stack
-        split_all = stack.split_stack(10)
+        split_all = stack.split(10)
         self.assertEqual(split_all.quantity, 3)
         self.assertTrue(stack.is_empty())
 
         # Split with None splits roughly half
         items2 = [self.item.clone() for _ in range(4)]
         stack2 = ItemStack([self.item] + items2)
-        half_stack = stack2.split_stack()
+        half_stack = stack2.split()
         self.assertEqual(half_stack.quantity, stack2.max_quantity // 2)
 
     def test_repr(self):
