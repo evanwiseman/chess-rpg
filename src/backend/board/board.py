@@ -1,30 +1,30 @@
 from src.backend.foundations.types import Vector2
 from typing import Dict, Optional, TYPE_CHECKING
 if TYPE_CHECKING:
-    from src.backend.entities import Entity
+    from src.backend.entities.pieces import Piece
 
 
 class BoardTile:
     """
-    Represents a tile on a chess board. Can contain an entity.
+    Represents a tile on a chess board. Can contain a piece.
     """
-    def __init__(self, entity: Optional['Entity'] = None):
+    def __init__(self, piece: Optional['Piece'] = None):
         """
-        Create a board tile with an optional Entity attached.
+        Create a board tile with an optional piece attached.
 
         Args:
-            entity (Entity, optional): An entity that occupies the Tile.
+            piece (Piece, optional): A piece that occupies the Tile.
         """
-        self.entity = entity
+        self.piece = piece
 
     def is_empty(self) -> bool:
         """
-        Check if the tile contains any entity.
+        Check if the tile contains any piece.
 
         Returns:
-            bool: Returns True if entity is None otherwise False
+            bool: Returns True if piece is None otherwise False
         """
-        return self.entity is None
+        return self.piece is None
 
 
 class Board:
@@ -89,132 +89,132 @@ class Board:
         """
         return (self._rows, self._cols)
 
-    # --- Entity ---
-    def contains_entity(self, entity: 'Entity'):
-        return entity.id in self._id_position_map
+    # --- Piece ---
+    def contains_piece(self, piece: 'Piece'):
+        return piece.id in self._id_position_map
 
-    def get_entity_position(self, entity: 'Entity') -> Vector2:
+    def get_piece_position(self, piece: 'Piece') -> Vector2:
         """
-        Get the position on the board of an Entity.
+        Get the position on the board of a piece.
 
         Args:
-            entity (Entity): The entity to find.
+            piece (Piece): The piece to find.
 
         Returns:
-            Vector2: The position of the entity on the board.
+            Vector2: The position of the piece on the board.
         """
-        if entity.id not in self._id_position_map:
-            raise KeyError(f"Entity {entity} is not on the board.")
-        return self._id_position_map[entity.id]
+        if piece.id not in self._id_position_map:
+            raise KeyError(f"Piece {piece} is not on the board.")
+        return self._id_position_map[piece.id]
 
-    def get_entity_at(self, position: Vector2) -> Optional['Entity']:
+    def get_piece_at(self, position: Vector2) -> Optional['Piece']:
         """
-        Get the entity at a given position.
+        Get the piece at a given position.
 
         Args:
-            position (Vector2): The position to get the entity at.
+            position (Vector2): The position to get the piece at.
 
         Returns:
-            Optional[Entity]: The entity at a position or None.
+            Optional[Piece]: The piece at a position or None.
         """
         tile = self._get_tile(position)
-        return tile.entity
+        return tile.piece
 
-    def place_entity(self, entity: 'Entity', position: Vector2):
+    def place_piece(self, piece: 'Piece', position: Vector2):
         """
-        Place an entity on the board at a given location.
+        Place an piece on the board at a given location.
 
         Args:
-            entity (Entity): The entity to place.
-            position (Vector2): The position to place the entity.
+            piece (Piece): The piece to place.
+            position (Vector2): The position to place the piece.
 
         Raises:
             KeyError: If the piece is already on the board.
             ValueError: If a piece is already occupying the tile.
         """
-        if self.contains_entity(entity):
-            raise KeyError(f"Entity {entity} is already on the board.")
+        if self.contains_piece(piece):
+            raise KeyError(f"Piece {piece} is already on the board.")
 
         tile = self._get_tile(position)
         if not tile.is_empty():
             raise ValueError(f"Position {position} is already occupied.")
 
-        # Place the entity on the tile and update id position map
-        tile.entity = entity
-        self._id_position_map[entity.id] = position
+        # Place the piece on the tile and update id position map
+        tile.piece = piece
+        self._id_position_map[piece.id] = position
 
-    def move_entity(self, entity: 'Entity', new_position: Vector2):
+    def move_piece(self, piece: 'Piece', new_position: Vector2):
         """
-        Move an entity to a position.
+        Move an piece to a position.
 
         Args:
-            entity (Entity): The entity to move.
-            new_position (Vector2): The position to move the entity to.
+            piece (Piece): The piece to move.
+            new_position (Vector2): The position to move the piece to.
 
         Raises:
-            KeyError: If the entity is not on the board.
-            ValueError: If an entity is already at the target position.
+            KeyError: If the piece is not on the board.
+            ValueError: If an piece is already at the target position.
         """
-        if not self.contains_entity(entity):
-            raise KeyError(f"Entity {entity} is not on the board.")
+        if not self.contains_piece(piece):
+            raise KeyError(f"Piece {piece} is not on the board.")
 
-        target = self.get_entity_at(new_position)
+        target = self.get_piece_at(new_position)
         if target is not None:
             raise ValueError(
                 f"Position {new_position} is already occupied by {target}"
             )
 
-        row, col = self.get_entity_position(entity)
+        row, col = self.get_piece_position(piece)
         new_row, new_col = new_position
 
         # Set previous to new position
-        self._grid[row][col].entity = None
-        self._grid[new_row][new_col].entity = entity
+        self._grid[row][col].piece = None
+        self._grid[new_row][new_col].piece = piece
 
         # Update id position map to new position
-        self._id_position_map[entity.id] = new_position
+        self._id_position_map[piece.id] = new_position
 
-    def remove_entity(self, entity: 'Entity') -> bool:
+    def remove_piece(self, piece: 'Piece') -> bool:
         """
-        Remove an entity if it exists on the board.
+        Remove an piece if it exists on the board.
 
         Args:
-            entity (Entity): The entity to remove.
+            piece (Piece): The piece to remove.
 
         Returns:
-            bool: True if entity was removed, False otherwise.
+            bool: True if piece was removed, False otherwise.
         """
-        if entity.id not in self._id_position_map:
+        if piece.id not in self._id_position_map:
             return False
 
-        row, col = self.get_entity_position(entity)
-        self._grid[row][col].entity = None
-        del self._id_position_map[entity.id]
+        row, col = self.get_piece_position(piece)
+        self._grid[row][col].piece = None
+        del self._id_position_map[piece.id]
         return True
 
-    def swap_entity(self, first: 'Entity', second: 'Entity'):
+    def swap_piece(self, first: 'Piece', second: 'Piece'):
         """
         Swap two entities on the board.
 
         Args:
-            first (Entity): The first entity to swap.
-            second (Entity): The second entity to swap.
+            first (Piece): The first piece to swap.
+            second (Piece): The second piece to swap.
 
         Raises:
-            KeyError: If the first entity is not on the board.
-            KeyError: If the second entity is not ono the board.
+            KeyError: If the first piece is not on the board.
+            KeyError: If the second piece is not ono the board.
         """
         if first.id not in self._id_position_map:
-            raise KeyError(f"Entity {first} is not on the board.")
+            raise KeyError(f"Piece {first} is not on the board.")
         if second.id not in self._id_position_map:
-            raise KeyError(f"Entity {second} is not on the board.")
+            raise KeyError(f"Piece {second} is not on the board.")
 
-        first_row, first_col = self.get_entity_position(first)
-        second_row, second_col = self.get_entity_position(second)
+        first_row, first_col = self.get_piece_position(first)
+        second_row, second_col = self.get_piece_position(second)
 
         # Swap the entities on respective tiles
-        self._grid[first_row][first_col].entity = second
-        self._grid[second_row][second_col].entity = first
+        self._grid[first_row][first_col].piece = second
+        self._grid[second_row][second_col].piece = first
 
         # Update the id position map to reflect the swap
         self._id_position_map[first.id] = (second_row, second_col)

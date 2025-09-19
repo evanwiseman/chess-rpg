@@ -28,67 +28,67 @@ class TestBoard(unittest.TestCase):
         self.assertEqual(self.board.get_size(), (8, 8))
 
     def test_place_entity(self):
-        self.board.place_entity(self.entity, (0, 0))
-        self.assertTrue(self.board.contains_entity(self.entity))
-        self.assertEqual(self.board.get_entity_position(self.entity), (0, 0))
-        self.assertEqual(self.board.get_entity_at((0, 0)), self.entity)
+        self.board.place_piece(self.entity, (0, 0))
+        self.assertTrue(self.board.contains_piece(self.entity))
+        self.assertEqual(self.board.get_piece_position(self.entity), (0, 0))
+        self.assertEqual(self.board.get_piece_at((0, 0)), self.entity)
 
     def test_place_entity_duplicate_entity(self):
-        self.board.place_entity(self.entity, (0, 0))
+        self.board.place_piece(self.entity, (0, 0))
         with self.assertRaises(KeyError):
-            self.board.place_entity(self.entity, (1, 1))
+            self.board.place_piece(self.entity, (1, 1))
 
     def test_place_entity_same_position(self):
-        self.board.place_entity(self.entity, (0, 0))
+        self.board.place_piece(self.entity, (0, 0))
         other_entity = Entity("other")
 
         with self.assertRaises(ValueError):
-            self.board.place_entity(other_entity, (0, 0))
+            self.board.place_piece(other_entity, (0, 0))
 
     def test_place_entity_multiple(self):
         entity1 = Entity("test1")
-        self.board.place_entity(entity1, (0, 0))
+        self.board.place_piece(entity1, (0, 0))
         entity2 = Entity("test2")
-        self.board.place_entity(entity2, (0, 1))
+        self.board.place_piece(entity2, (0, 1))
         entity3 = Entity("test3")
-        self.board.place_entity(entity3, (0, 2))
+        self.board.place_piece(entity3, (0, 2))
 
-        self.assertTrue(self.board.contains_entity(entity1))
-        self.assertEqual(self.board.get_entity_position(entity1), (0, 0))
+        self.assertTrue(self.board.contains_piece(entity1))
+        self.assertEqual(self.board.get_piece_position(entity1), (0, 0))
 
-        self.assertTrue(self.board.contains_entity(entity2))
-        self.assertEqual(self.board.get_entity_position(entity2), (0, 1))
+        self.assertTrue(self.board.contains_piece(entity2))
+        self.assertEqual(self.board.get_piece_position(entity2), (0, 1))
 
-        self.assertTrue(self.board.contains_entity(entity3))
-        self.assertEqual(self.board.get_entity_position(entity3), (0, 2))
+        self.assertTrue(self.board.contains_piece(entity3))
+        self.assertEqual(self.board.get_piece_position(entity3), (0, 2))
 
     def test_move_entity(self):
-        self.board.place_entity(self.entity, (0, 0))
-        self.board.move_entity(self.entity, (1, 1))
+        self.board.place_piece(self.entity, (0, 0))
+        self.board.move_piece(self.entity, (1, 1))
 
-        self.assertTrue(self.board.contains_entity(self.entity))
-        self.assertEqual(self.board.get_entity_position(self.entity), (1, 1))
-        self.assertIsNone(self.board.get_entity_at((0, 0)))
+        self.assertTrue(self.board.contains_piece(self.entity))
+        self.assertEqual(self.board.get_piece_position(self.entity), (1, 1))
+        self.assertIsNone(self.board.get_piece_at((0, 0)))
 
     def test_remove_entity(self):
-        self.board.place_entity(self.entity, (0, 0))
-        self.assertTrue(self.board.remove_entity(self.entity))
-        self.assertFalse(self.board.remove_entity(self.entity))
+        self.board.place_piece(self.entity, (0, 0))
+        self.assertTrue(self.board.remove_piece(self.entity))
+        self.assertFalse(self.board.remove_piece(self.entity))
 
-        self.assertFalse(self.board.contains_entity(self.entity))
+        self.assertFalse(self.board.contains_piece(self.entity))
         with self.assertRaises(KeyError):
-            self.board.get_entity_position(self.entity)
+            self.board.get_piece_position(self.entity)
 
     def test_swap_entity(self):
         first = Entity("first")
         second = Entity("second")
 
-        self.board.place_entity(first, (0, 0))
-        self.board.place_entity(second, (1, 1))
+        self.board.place_piece(first, (0, 0))
+        self.board.place_piece(second, (1, 1))
 
-        self.board.swap_entity(first, second)
-        self.assertEqual(self.board.get_entity_position(first), (1, 1))
-        self.assertEqual(self.board.get_entity_position(second), (0, 0))
+        self.board.swap_piece(first, second)
+        self.assertEqual(self.board.get_piece_position(first), (1, 1))
+        self.assertEqual(self.board.get_piece_position(second), (0, 0))
 
 
 if __name__ == "__main__":
