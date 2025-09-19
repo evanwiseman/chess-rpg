@@ -4,7 +4,7 @@ from .piece import Piece
 
 
 class King(Piece):
-    def __init__(self, name, id: str = None):
+    def __init__(self, name: str = "King", id: str = None):
         super().__init__(name, id)
         self.hp = 100
 

@@ -13,7 +13,7 @@ class ActionValidator:
         moves = []
         position = self.board.get_piece_position(piece)
         for dx, dy in piece.get_move_directions():
-            for i in range(piece.get_move_range()):
+            for i in range(1, piece.get_move_range() + 1):
                 row = position[0] + dy * i
                 col = position[1] + dx * i
 
@@ -31,7 +31,7 @@ class ActionValidator:
         attacks = []
         position = self.board.get_piece_position(piece)
         for dx, dy in piece.get_move_directions():
-            for i in range(piece.get_attack_range()):
+            for i in range(1, piece.get_attack_range() + 1):
                 row = position[0] + dy * i
                 col = position[1] + dx * i
 

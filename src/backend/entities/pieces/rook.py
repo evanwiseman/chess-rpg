@@ -4,7 +4,7 @@ from .piece import Piece
 
 
 class Rook(Piece):
-    def __init__(self, name, id: str = None):
+    def __init__(self, name: str = "Rook", id: str = None):
         super().__init__(name, id)
         self.hp = 50
 
@@ -13,7 +13,7 @@ class Rook(Piece):
 
     def get_move_directions(self) -> List[Vector2]:
         return [
-            ((1, 0), (-1, 0), (0, 1), (0, -1))
+            (1, 0), (-1, 0), (0, 1), (0, -1)
         ]
 
     def get_attack_range(self) -> int:

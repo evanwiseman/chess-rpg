@@ -4,7 +4,7 @@ from .piece import Piece
 
 
 class Bishop(Piece):
-    def __init__(self, name, id: str = None):
+    def __init__(self, name: str = "Bishop", id: str = None):
         super().__init__(name, id)
         self.hp = 30
         self.damage = 15
